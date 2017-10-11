@@ -139,6 +139,7 @@ def interface() :
                 #ouverture du fichier source
                 new_picture = Image.open("new.png")                
                 word = picture2word(new_picture)
+                #print(word)
                 
                 digit = analyse(word,base)
                 if digit == 0 :
@@ -372,9 +373,8 @@ def word2picture(word) :
 def picture2word(picture) :
     """fonction retournant le mot correspondant au pictogramme noir tracé dans
     le fichier entrer en paramètre"""
-    
-    #picture.show()
 
+    #picture.show()
     #récupération des dimensions de l'image
     width,height = picture.size
     #print(width)
@@ -385,11 +385,15 @@ def picture2word(picture) :
     h = 0
     while (picture.getpixel((w,h)) != (0,0,0)) :
         w = w+1
-        if (w == width) : 
+        if (w >= width) : 
             w = 0
-            if (h == height) :
-                exit
             h = h+1
+            if (h >= height) :
+                # L'image est entièrement blanche
+                return ""
+            
+            
+
     #print("largeur : ",w," et hauteur : ",h," pour le premier pixel.")
 
     #parcours de l'image à partir de ce pixel
@@ -400,6 +404,7 @@ def picture2word(picture) :
     word = ""
     last = 0
     while (end) :
+        
         if (last == 0) :
             if (picture.getpixel((w-1,h-1)) == (0,0,0)) :
                 last = 5
@@ -636,7 +641,39 @@ def picture2word(picture) :
         if (w == w_save and h == h_save) :
             end = 0
         #print("pixel étudié : ",w," , ",h)
+        
+    cleaned_picture = clean_picture(picture,w_save,h_save)
+    second_word = picture2word(cleaned_picture)
+        
+    if (second_word != ""):
+        word = word + "#" + second_word
+        
     return(word)
+
+def clean_picture(picture,w,h) :
+    picture.putpixel((w,h), (255,255,255))
+        
+    if picture.getpixel((w+1,h)) == (0,0,0) :
+        picture = clean_picture(picture, w+1, h)
+    if picture.getpixel((w+1,h+1)) == (0,0,0) :
+        picture = clean_picture(picture, w+1, h+1)
+    if picture.getpixel((w+1,h-1)) == (0,0,0) :
+        picture = clean_picture(picture, w+1, h-1)
+        
+    if picture.getpixel((w-1,h)) == (0,0,0) :
+        picture = clean_picture(picture, w-1, h)
+    if picture.getpixel((w-1,h+1)) == (0,0,0) :
+        picture = clean_picture(picture, w-1, h+1)
+    if picture.getpixel((w-1,h-1)) == (0,0,0) :
+        picture = clean_picture(picture, w-1, h-1)
+        
+    if picture.getpixel((w,h+1)) == (0,0,0) :
+        picture = clean_picture(picture, w, h+1)
+    if picture.getpixel((w,h-1)) == (0,0,0) :
+        picture = clean_picture(picture, w, h-1)
+        
+    return picture
+    
 
 #word2picture(picture2word("0b.png"))
 #word2picture(picture2word("0d.png"))
