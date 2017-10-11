@@ -134,8 +134,11 @@ def interface() :
             if event.type == MOUSEBUTTONDOWN and event.button == 1 and \
             event.pos[0] > 231 and event.pos[0] < 329 and \
             event.pos[1] > 11 and event.pos[1] < 109 and learn == 1 :
-                picture.save("new.png")                
-                word = picture2word("new.png")
+                picture.save("new.png")
+                
+                #ouverture du fichier source
+                new_picture = Image.open("new.png")                
+                word = picture2word(new_picture)
                 
                 digit = analyse(word,base)
                 if digit == 0 :
@@ -366,12 +369,10 @@ def word2picture(word) :
     #picture.save("test.png")
     return picture
     
-def picture2word(file) :
+def picture2word(picture) :
     """fonction retournant le mot correspondant au pictogramme noir tracé dans
     le fichier entrer en paramètre"""
     
-    #ouverture du fichier source
-    picture = Image.open(file)
     #picture.show()
 
     #récupération des dimensions de l'image
