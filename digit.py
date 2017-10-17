@@ -33,13 +33,17 @@ def close(base) :
     os.remove("new.png")
 
 def analyse(word,base) :
+    id_mini = -1
+    mini = -1
+    
     for i in range(10) :
         for w in base[i] :
             dist = editdistance.eval(word,w)
             print(dist)
-            if dist < 60 :
-                return i
-    return -1
+            if dist < mini or mini < 0 :
+                mini = dist
+                id_mini = i
+    return id_mini
     
 def interface() : 
     #Initialisation
@@ -166,7 +170,7 @@ def interface() :
                     
                 if digit != -1 :
                     learn = 2
-                    base[digit].append(word)
+#                    base[digit].append(word)
                 
                 if learn == 1 :
                     window.blit(blearn, (340,10))
