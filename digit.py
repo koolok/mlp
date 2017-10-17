@@ -9,6 +9,7 @@ from PIL import Image
 import os
 import pygame
 from pygame.locals import *
+import editdistance
 
 def init() :
     try :
@@ -34,7 +35,7 @@ def close(base) :
 def analyse(word,base) :
     for i in range(10) :
         for w in base[i] :
-            dist = distance(word,w)
+            dist = editdistance.eval(word,w)
             print(dist)
             if dist < 60 :
                 return i
