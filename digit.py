@@ -13,7 +13,8 @@ from pygame.locals import *
 import numpy as np
 from collections import deque
 import pickle 
-import editdistance
+#import editdistance
+from array import array
 
 def init() :
     file = open("distance_matrix.pk", 'rb') 
@@ -41,7 +42,8 @@ def update_matrix(base, distance_matrix, word) :
     distance_matrix = np.hstack([distance_matrix,newcol])
     
     for i in range(len(distance_matrix)-1) :
-        distance_matrix[-1][i] = distance_matrix[i][-1] = editdistance.eval(word,base[i])
+#        distance_matrix[-1][i] = distance_matrix[i][-1] = editdistance.eval(word,base[i])
+        distance_matrix[-1][i] = distance_matrix[i][-1] = distance(word,base[i])
         
     file = open('distance_matrix.pk', 'wb') 
 
@@ -64,7 +66,8 @@ def analyse(word,base,label,distance_matrix) :
     for i in range(len(base)) :
         w = base[i]
             
-        dist = editdistance.eval(word,w)
+        dist = distance(word,w)
+#        dist = editdistance.eval(word,w)
         print(dist)
         if dist < mini or mini < 0 :
             mini = dist
@@ -370,7 +373,39 @@ def pen_mat(a,b,c,d,e):
 pen_mat = pen_mat(0,1,2,3,4)
 pen_add_suppr = 2
 
-def distance(word1,word2) : 
+def distance(seq1, seq2, max_dist=-1):
+    if seq1 == seq2:
+        return 0
+	
+    len1, len2 = len(seq1), len(seq2)
+    if max_dist >= 0 and abs(len1 - len2) > max_dist:
+        return -1
+    if len1 == 0:
+        return len2
+    if len2 == 0:
+        return len1
+    if len1 < len2:
+        len1, len2 = len2, len1
+        seq1, seq2 = seq2, seq1
+	
+    column = array('L', range(0,pen_add_suppr*(len2 + 1),pen_add_suppr))
+	
+    for x in range(1, len1 + 1):
+        column[0] = x
+        last = x - 1
+        for y in range(1, len2 + 1):
+            old = column[y]
+            cost = pen_mat[ord(seq1[x - 1])-48][ord(seq2[y - 1])-48]
+            column[y] = min(column[y] + pen_add_suppr, column[y - 1] + pen_add_suppr, last + cost)
+            last = old
+        if max_dist >= 0 and min(column) > max_dist:
+            return -1
+	
+    if max_dist >= 0 and column[len2] > max_dist:
+        return -1
+    return column[len2]
+
+def distance_(word1,word2) : 
     dico = { (-1,-1):0 }
     
     for i,c_i in enumerate(word1) :
