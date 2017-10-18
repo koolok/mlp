@@ -1,0 +1,2 @@
+Pure python Levenshtein distance :
+https://github.com/doukremt/distance
