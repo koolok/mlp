@@ -8,6 +8,7 @@ Created on Wed Jun 18 09:20:13 2016
 from PIL import Image
 import os
 import pygame
+import numpy as np
 from pygame.locals import *
 import pickle 
 import editdistance
@@ -31,6 +32,20 @@ def init() :
         label = []
     return base, label, distance_matrix
 
+def update_matrix(base, distance_matrix, word) :
+    newrow = np.zeros(len(distance_matrix))
+    distance_matrix = np.vstack([distance_matrix, newrow])
+    newcol = np.zeros((len(distance_matrix),1))
+    distance_matrix = np.hstack([distance_matrix,newcol])
+    
+    for i in range(len(distance_matrix)-1) :
+        distance_matrix[-1][i] = distance_matrix[i][-1] = editdistance.eval(word,base[i])
+        
+    file = open('distance_matrix.pk', 'wb') 
+
+    pickle.dump(distance_matrix, file) 
+    file.close()
+
 def close(base,label) :
     data = open("data.txt", "w", encoding="utf-8")
     for i in range(len(base)) :
@@ -45,7 +60,7 @@ def analyse(word,base,label,distance_matrix) :
     mini = -1
     
     for i in range(len(base)) :
-        w = base[i]       
+        w = base[i]
             
         dist = editdistance.eval(word,w)
         print(dist)
@@ -176,10 +191,11 @@ def interface() :
                 elif digit == 9 :
                     window.blit(b9, (340,10))
                     
-                if digit != -1 :
-                    learn = 2
-#                    base[digit].append(word)
+#                if digit != -1 :
+#                    learn = 2
+##                    base[digit].append(word)
                 
+                learn=2
                 if learn == 1 :
                     window.blit(blearn, (340,10))
                 else :
@@ -195,6 +211,7 @@ def interface() :
             event.pos[1] > 121 and event.pos[1] < 219 and learn == 1 :
                 base.append(word)
                 label.append(0)
+                update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -207,6 +224,7 @@ def interface() :
             event.pos[1] > 121 and event.pos[1] < 219 and learn == 1 :
                 base.append(word)
                 label.append(1)
+                update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -219,6 +237,7 @@ def interface() :
             event.pos[1] > 121 and event.pos[1] < 219 and learn == 1 :
                 base.append(word)
                 label.append(2)
+                update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -231,6 +250,7 @@ def interface() :
             event.pos[1] > 121 and event.pos[1] < 219 and learn == 1:
                 base.append(word)
                 label.append(3)
+                update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -243,6 +263,7 @@ def interface() :
             event.pos[1] > 121 and event.pos[1] < 219 and learn == 1 :       
                 base.append(word)
                 label.append(4)
+                update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -255,6 +276,7 @@ def interface() :
             event.pos[1] > 231 and event.pos[1] < 329 and learn == 1 :
                 base.append(word)
                 label.append(5)
+                update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -267,6 +289,7 @@ def interface() :
             event.pos[1] > 231 and event.pos[1] < 329 and learn == 1 :
                 base.append(word)
                 label.append(6)
+                update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -279,6 +302,7 @@ def interface() :
             event.pos[1] > 231 and event.pos[1] < 329 and learn == 1 :
                 base.append(word)
                 label.append(7)
+                update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -291,6 +315,7 @@ def interface() :
             event.pos[1] > 231 and event.pos[1] < 329 and learn == 1 :
                 base.append(word)
                 label.append(8)
+                update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -303,6 +328,7 @@ def interface() :
             event.pos[1] > 231 and event.pos[1] < 329 and learn == 1 :
                 base.append(word)
                 label.append(9)
+                update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
