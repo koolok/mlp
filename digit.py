@@ -36,10 +36,7 @@ def init() :
         distance_matrix = pickle.load(file) 
         file.close()
     except :
-        distance_matrix = np.array(base)
-        file = open('distance_matrix.pk', 'wb') 
-        pickle.dump(distance_matrix, file) 
-        file.close()
+        distance_matrix = np.zeros((len(base),len(base)))
         
     return base, label, distance_matrix
 
@@ -53,12 +50,9 @@ def update_matrix(base, distance_matrix, word) :
 #        distance_matrix[-1][i] = distance_matrix[i][-1] = editdistance.eval(word,base[i])
         distance_matrix[-1][i] = distance_matrix[i][-1] = distance(word,base[i])
         
-    file = open('distance_matrix.pk', 'wb') 
+    return distance_matrix
 
-    pickle.dump(distance_matrix, file) 
-    file.close()
-
-def close(base,label) :
+def close(base,label,distance_matrix) :
     data = open("data.txt", "w", encoding="utf-8")
     for i in range(len(base)) :
         word = base[i]
@@ -66,8 +60,12 @@ def close(base,label) :
     data.close()
     os.remove("temp.png")
     os.remove("new.png")
+    
+    file = open('distance_matrix.pk', 'wb') 
+    pickle.dump(distance_matrix, file) 
+    file.close()
 
-def analyse(word,base,label,distance_matrix) :
+def analyse(word,base,label) :
     label_mini = -1
     mini = -1
 
@@ -83,16 +81,23 @@ def analyse(word,base,label,distance_matrix) :
     return label_mini
 
 def analyse_triangle(word,base,label,distance_matrix) :
+    if len(base) == 0 :
+        return -1
+    if len(base) == 1 :
+        return label[0]
+    
     pool = list(range(len(base)))
-
+    
     w1 = random.choice(pool)
     pool.remove(w1)
     
     w2 = random.choice(pool)
     pool.remove(w2)
 
-    dist_w1 = editdistance.eval(base[w1],word)
-    dist_w2 = editdistance.eval(base[w2],word)
+#    dist_w1 = editdistance.eval(base[w1],word)
+#    dist_w2 = editdistance.eval(base[w2],word)
+    dist_w1 = distance(base[w1],word)
+    dist_w2 = distance(base[w2],word)
     
     while (pool != []) :
         if dist_w1 > dist_w2 :
@@ -104,7 +109,8 @@ def analyse_triangle(word,base,label,distance_matrix) :
                 break
             w1 = random.choice(pool)
             pool.remove(w1)
-            dist_w1 = editdistance.eval(base[w1],word)
+            dist_w1 = distance(base[w1],word)
+#            dist_w1 = editdistance.eval(base[w1],word)
                     
         else :
             for i in pool :
@@ -115,7 +121,8 @@ def analyse_triangle(word,base,label,distance_matrix) :
                 break
             w2 = random.choice(pool)
             pool.remove(w2)
-            dist_w2 = editdistance.eval(base[w2],word)
+            dist_w2 = distance(base[w2],word)
+#            dist_w2 = editdistance.eval(base[w2],word)
             
     if (dist_w1 < dist_w2) :
         return label[w1]
@@ -176,7 +183,7 @@ def interface() :
         for event in pygame.event.get() :
             #gestion de la fermeture de la fenêtre
             if event.type == QUIT :
-                close(base,label)
+                close(base,label,distance_matrix)
                 continuer = 0
                 pygame.quit()
                 
@@ -221,7 +228,6 @@ def interface() :
                 #ouverture du fichier source
                 new_picture = Image.open("new.png")                
                 word = picture2word(new_picture)
-                #print(word)
                 
                 digit = analyse_triangle(word,base,label,distance_matrix)
                 if digit == 0 :
@@ -244,19 +250,21 @@ def interface() :
                     window.blit(b8, (340,10))
                 elif digit == 9 :
                     window.blit(b9, (340,10))
+                else :
+                    window.blit(blearn, (340,10))
                     
 #                if digit != -1 :
 #                    learn = 2
-##                    base[digit].append(word)
+#                    base[digit].append(word)
                 
-                learn=2
-                if learn == 1 :
-                    window.blit(blearn, (340,10))
-                else :
-                    initPicture(picture)
-                    picture.save("temp.png")
-                    draw = pygame.image.load("temp.png").convert()
-                    window.blit(draw, (10,10))
+                
+#                if learn == 1 :
+#                    window.blit(blearn, (340,10))
+#                else :
+#                    initPicture(picture)
+#                    picture.save("temp.png")
+#                    draw = pygame.image.load("temp.png").convert()
+#                    window.blit(draw, (10,10))
                 pygame.display.flip()
             
             #gestion des boutons chiffres
@@ -265,7 +273,7 @@ def interface() :
             event.pos[1] > 121 and event.pos[1] < 219 and learn == 1 :
                 base.append(word)
                 label.append(0)
-                update_matrix(base, distance_matrix, word)
+                distance_matrix = update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -278,7 +286,7 @@ def interface() :
             event.pos[1] > 121 and event.pos[1] < 219 and learn == 1 :
                 base.append(word)
                 label.append(1)
-                update_matrix(base, distance_matrix, word)
+                distance_matrix = update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -291,7 +299,7 @@ def interface() :
             event.pos[1] > 121 and event.pos[1] < 219 and learn == 1 :
                 base.append(word)
                 label.append(2)
-                update_matrix(base, distance_matrix, word)
+                distance_matrix = update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -304,7 +312,7 @@ def interface() :
             event.pos[1] > 121 and event.pos[1] < 219 and learn == 1:
                 base.append(word)
                 label.append(3)
-                update_matrix(base, distance_matrix, word)
+                distance_matrix = update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -317,7 +325,7 @@ def interface() :
             event.pos[1] > 121 and event.pos[1] < 219 and learn == 1 :       
                 base.append(word)
                 label.append(4)
-                update_matrix(base, distance_matrix, word)
+                distance_matrix = distance_matrix = update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -330,7 +338,7 @@ def interface() :
             event.pos[1] > 231 and event.pos[1] < 329 and learn == 1 :
                 base.append(word)
                 label.append(5)
-                update_matrix(base, distance_matrix, word)
+                distance_matrix = update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -343,7 +351,7 @@ def interface() :
             event.pos[1] > 231 and event.pos[1] < 329 and learn == 1 :
                 base.append(word)
                 label.append(6)
-                update_matrix(base, distance_matrix, word)
+                distance_matrix = update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -356,7 +364,7 @@ def interface() :
             event.pos[1] > 231 and event.pos[1] < 329 and learn == 1 :
                 base.append(word)
                 label.append(7)
-                update_matrix(base, distance_matrix, word)
+                distance_matrix = update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -369,7 +377,7 @@ def interface() :
             event.pos[1] > 231 and event.pos[1] < 329 and learn == 1 :
                 base.append(word)
                 label.append(8)
-                update_matrix(base, distance_matrix, word)
+                distance_matrix = update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -382,7 +390,7 @@ def interface() :
             event.pos[1] > 231 and event.pos[1] < 329 and learn == 1 :
                 base.append(word)
                 label.append(9)
-                update_matrix(base, distance_matrix, word)
+                distance_matrix = update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
