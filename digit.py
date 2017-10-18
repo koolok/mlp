@@ -9,6 +9,7 @@ from PIL import Image
 import os
 import pygame
 import numpy as np
+import random
 from pygame.locals import *
 import pickle 
 import editdistance
@@ -68,6 +69,47 @@ def analyse(word,base,label,distance_matrix) :
             mini = dist
             label_mini = label[i]
     return label_mini
+
+def analyse_triangle(word,base,label,distance_matrix) :
+    pool = list(range(len(base)))
+
+    w1 = random.choice(pool)
+    pool.remove(w1)
+    
+    w2 = random.choice(pool)
+    pool.remove(w2)
+
+    dist_w1 = editdistance.eval(base[w1],word)
+    dist_w2 = editdistance.eval(base[w2],word)
+    
+    while (pool != []) :
+        if dist_w1 > dist_w2 :
+            for i in pool :
+                if distance_matrix[i][w1] < dist_w1 - dist_w2 or distance_matrix[i][w1] > dist_w1 + dist_w2 :
+                    pool.remove(i)
+                    
+            if pool == [] :
+                break
+            w1 = random.choice(pool)
+            pool.remove(w1)
+            dist_w1 = editdistance.eval(base[w1],word)
+                    
+        else :
+            for i in pool :
+                if distance_matrix[i][w1] < dist_w2 - dist_w1 or distance_matrix[i][w1] > dist_w2 + dist_w1 :
+                    pool.remove(i)
+            
+            if pool == [] :
+                break
+            w2 = random.choice(pool)
+            pool.remove(w2)
+            dist_w2 = editdistance.eval(base[w2],word)
+            
+    if (dist_w1 < dist_w2) :
+        return label[w1]
+    else :
+        return label[w2]
+        
     
 def interface() : 
     #Initialisation
@@ -169,7 +211,7 @@ def interface() :
                 word = picture2word(new_picture)
                 #print(word)
                 
-                digit = analyse(word,base,label,distance_matrix)
+                digit = analyse_triangle(word,base,label,distance_matrix)
                 if digit == 0 :
                     window.blit(b0, (340,10))
                 elif digit == 1 :
