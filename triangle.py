@@ -6,7 +6,7 @@ Created on Tue Oct 17 12:55:54 2017
 @author: koolok
 """
 
-from pylab import zeros
+import numpy as np
 import pickle 
 import editdistance
 
@@ -25,7 +25,7 @@ def init() :
 
 base = init()
 
-distance_matrix = zeros((len(base),len(base)))
+distance_matrix = np.zeros((len(base),len(base)))
 
 for i in range(len(base)) :
     for j in range(len(base)) :
