@@ -35,3 +35,4 @@ for i in range(len(base)) :
 file = open('distance_matrix.pk', 'wb') 
 
 pickle.dump(distance_matrix, file) 
+file.close()
