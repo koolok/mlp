@@ -9,16 +9,15 @@ from PIL import Image
 import os
 import pygame
 import numpy as np
+import random
 from pygame.locals import *
 import numpy as np
 from collections import deque
 import pickle 
+#import editdistance
+from array import array
 
 def init() :
-    file = open("distance_matrix.pk", 'rb') 
-    distance_matrix = pickle.load(file) 
-    file.close()
-    
     try :
         data = open("data.txt", "r", encoding="utf-8")
         base = []
@@ -31,6 +30,14 @@ def init() :
     except :
         base = []
         label = []
+    
+    try :
+        file = open("distance_matrix.pk", 'rb') 
+        distance_matrix = pickle.load(file) 
+        file.close()
+    except :
+        distance_matrix = np.zeros((len(base),len(base)))
+        
     return base, label, distance_matrix
 
 def update_matrix(base, distance_matrix, word) :
@@ -42,12 +49,9 @@ def update_matrix(base, distance_matrix, word) :
     for i in range(len(distance_matrix)-1) :
         distance_matrix[-1][i] = distance_matrix[i][-1] = distance(word,base[i])
         
-    file = open('distance_matrix.pk', 'wb') 
+    return distance_matrix
 
-    pickle.dump(distance_matrix, file) 
-    file.close()
-
-def close(base,label) :
+def close(base,label,distance_matrix) :
     data = open("data.txt", "w", encoding="utf-8")
     for i in range(len(base)) :
         word = base[i]
@@ -55,20 +59,75 @@ def close(base,label) :
     data.close()
     os.remove("temp.png")
     os.remove("new.png")
+    
+    file = open('distance_matrix.pk', 'wb') 
+    pickle.dump(distance_matrix, file) 
+    file.close()
 
-def analyse(word,base,label,distance_matrix) :
+def analyse(word,base,label) :
     label_mini = -1
     mini = -1
 
     for i in range(len(base)) :
         w = base[i]
             
-        dist = editdistance.eval(word,w)
+        dist = distance(word,w)
+#        dist = editdistance.eval(word,w)
         print(dist)
         if dist < mini or mini < 0 :
             mini = dist
             label_mini = label[i]
     return label_mini
+
+def analyse_triangle(word,base,label,distance_matrix) :
+    if len(base) == 0 :
+        return -1
+    if len(base) == 1 :
+        return label[0]
+    
+    pool = list(range(len(base)))
+    
+    w1 = random.choice(pool)
+    pool.remove(w1)
+    
+    w2 = random.choice(pool)
+    pool.remove(w2)
+
+#    dist_w1 = editdistance.eval(base[w1],word)
+#    dist_w2 = editdistance.eval(base[w2],word)
+    dist_w1 = distance(base[w1],word)
+    dist_w2 = distance(base[w2],word)
+    
+    while (pool != []) :
+        if dist_w1 > dist_w2 :
+            for i in pool :
+                if distance_matrix[i][w1] < dist_w1 - dist_w2 or distance_matrix[i][w1] > dist_w1 + dist_w2 :
+                    pool.remove(i)
+                    
+            if pool == [] :
+                break
+            w1 = random.choice(pool)
+            pool.remove(w1)
+            dist_w1 = distance(base[w1],word)
+#            dist_w1 = editdistance.eval(base[w1],word)
+                    
+        else :
+            for i in pool :
+                if distance_matrix[i][w1] < dist_w2 - dist_w1 or distance_matrix[i][w1] > dist_w2 + dist_w1 :
+                    pool.remove(i)
+            
+            if pool == [] :
+                break
+            w2 = random.choice(pool)
+            pool.remove(w2)
+            dist_w2 = distance(base[w2],word)
+#            dist_w2 = editdistance.eval(base[w2],word)
+            
+    if (dist_w1 < dist_w2) :
+        return label[w1]
+    else :
+        return label[w2]
+        
     
 def interface() : 
     #Initialisation
@@ -128,7 +187,7 @@ def interface() :
         for event in pygame.event.get() :
             #gestion de la fermeture de la fenêtre
             if event.type == QUIT :
-                close(base,label)
+                close(base,label,distance_matrix)
                 continuer = 0
                 pygame.quit()
                 
@@ -178,9 +237,8 @@ def interface() :
                 #ouverture du fichier source
                 new_picture = Image.open("new.png")                
                 word = picture2word(new_picture)
-                #print(word)
                 
-                digit = analyse(word,base,label,distance_matrix)
+                digit = analyse_triangle(word,base,label,distance_matrix)
                 if digit == 0 :
                     window.blit(b0, (340,10))
                 elif digit == 1 :
@@ -201,19 +259,21 @@ def interface() :
                     window.blit(b8, (340,10))
                 elif digit == 9 :
                     window.blit(b9, (340,10))
+                else :
+                    window.blit(blearn, (340,10))
                     
 #                if digit != -1 :
 #                    learn = 2
-##                    base[digit].append(word)
+#                    base[digit].append(word)
                 
-                learn=2
-                if learn == 1 :
-                    window.blit(blearn, (340,10))
-                else :
-                    initPicture(picture)
-                    picture.save("temp.png")
-                    draw = pygame.image.load("temp.png").convert()
-                    window.blit(draw, (10,10))
+                
+#                if learn == 1 :
+#                    window.blit(blearn, (340,10))
+#                else :
+#                    initPicture(picture)
+#                    picture.save("temp.png")
+#                    draw = pygame.image.load("temp.png").convert()
+#                    window.blit(draw, (10,10))
                 pygame.display.flip()
             
             #gestion des boutons chiffres
@@ -222,7 +282,7 @@ def interface() :
             event.pos[1] > 121 and event.pos[1] < 219 and learn == 1 :
                 base.append(word)
                 label.append(0)
-                update_matrix(base, distance_matrix, word)
+                distance_matrix = update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -235,7 +295,7 @@ def interface() :
             event.pos[1] > 121 and event.pos[1] < 219 and learn == 1 :
                 base.append(word)
                 label.append(1)
-                update_matrix(base, distance_matrix, word)
+                distance_matrix = update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -248,7 +308,7 @@ def interface() :
             event.pos[1] > 121 and event.pos[1] < 219 and learn == 1 :
                 base.append(word)
                 label.append(2)
-                update_matrix(base, distance_matrix, word)
+                distance_matrix = update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -261,7 +321,7 @@ def interface() :
             event.pos[1] > 121 and event.pos[1] < 219 and learn == 1:
                 base.append(word)
                 label.append(3)
-                update_matrix(base, distance_matrix, word)
+                distance_matrix = update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -274,7 +334,7 @@ def interface() :
             event.pos[1] > 121 and event.pos[1] < 219 and learn == 1 :       
                 base.append(word)
                 label.append(4)
-                update_matrix(base, distance_matrix, word)
+                distance_matrix = distance_matrix = update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -287,7 +347,7 @@ def interface() :
             event.pos[1] > 231 and event.pos[1] < 329 and learn == 1 :
                 base.append(word)
                 label.append(5)
-                update_matrix(base, distance_matrix, word)
+                distance_matrix = update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -300,7 +360,7 @@ def interface() :
             event.pos[1] > 231 and event.pos[1] < 329 and learn == 1 :
                 base.append(word)
                 label.append(6)
-                update_matrix(base, distance_matrix, word)
+                distance_matrix = update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -313,7 +373,7 @@ def interface() :
             event.pos[1] > 231 and event.pos[1] < 329 and learn == 1 :
                 base.append(word)
                 label.append(7)
-                update_matrix(base, distance_matrix, word)
+                distance_matrix = update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -326,7 +386,7 @@ def interface() :
             event.pos[1] > 231 and event.pos[1] < 329 and learn == 1 :
                 base.append(word)
                 label.append(8)
-                update_matrix(base, distance_matrix, word)
+                distance_matrix = update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -339,7 +399,7 @@ def interface() :
             event.pos[1] > 231 and event.pos[1] < 329 and learn == 1 :
                 base.append(word)
                 label.append(9)
-                update_matrix(base, distance_matrix, word)
+                distance_matrix = update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -378,6 +438,38 @@ def pen_mat(a,b,c,d,e):
     
 pen_mat = pen_mat(0,1,2,3,4)
 pen_add_suppr = 2
+
+def distance_(seq1, seq2, max_dist=-1):
+    if seq1 == seq2:
+        return 0
+	
+    len1, len2 = len(seq1), len(seq2)
+    if max_dist >= 0 and abs(len1 - len2) > max_dist:
+        return -1
+    if len1 == 0:
+        return len2
+    if len2 == 0:
+        return len1
+    if len1 < len2:
+        len1, len2 = len2, len1
+        seq1, seq2 = seq2, seq1
+	
+    column = array('L', range(0,2*(len2 + 1),2))
+	
+    for x in range(1, len1 + 1):
+        column[0] = x
+        last = x - 1
+        for y in range(1, len2 + 1):
+            old = column[y]
+            cost = pen_mat[ord(seq1[x - 1])-48][ord(seq2[y - 1])-48]
+            column[y] = min(column[y] + 2, column[y - 1] + 2, last + cost)
+            last = old
+        if max_dist >= 0 and min(column) > max_dist:
+            return -1
+	
+    if max_dist >= 0 and column[len2] > max_dist:
+        return -1
+    return column[len2]
 
 def distance(word1,word2) : 
     dico = { (-1,-1):0 }
