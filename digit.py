@@ -17,10 +17,6 @@ import pickle
 from array import array
 
 def init() :
-    file = open("distance_matrix.pk", 'rb') 
-    distance_matrix = pickle.load(file) 
-    file.close()
-    
     try :
         data = open("data.txt", "r", encoding="utf-8")
         base = []
@@ -33,6 +29,17 @@ def init() :
     except :
         base = []
         label = []
+    
+    try :
+        file = open("distance_matrix.pk", 'rb') 
+        distance_matrix = pickle.load(file) 
+        file.close()
+    except :
+        distance_matrix = np.array(base)
+        file = open('distance_matrix.pk', 'wb') 
+        pickle.dump(distance_matrix, file) 
+        file.close()
+        
     return base, label, distance_matrix
 
 def update_matrix(base, distance_matrix, word) :
@@ -373,7 +380,7 @@ def pen_mat(a,b,c,d,e):
 pen_mat = pen_mat(0,1,2,3,4)
 pen_add_suppr = 2
 
-def distance(seq1, seq2, max_dist=-1):
+def distance_(seq1, seq2, max_dist=-1):
     if seq1 == seq2:
         return 0
 	
@@ -388,7 +395,7 @@ def distance(seq1, seq2, max_dist=-1):
         len1, len2 = len2, len1
         seq1, seq2 = seq2, seq1
 	
-    column = array('L', range(0,pen_add_suppr*(len2 + 1),pen_add_suppr))
+    column = array('L', range(0,2*(len2 + 1),2))
 	
     for x in range(1, len1 + 1):
         column[0] = x
@@ -396,7 +403,7 @@ def distance(seq1, seq2, max_dist=-1):
         for y in range(1, len2 + 1):
             old = column[y]
             cost = pen_mat[ord(seq1[x - 1])-48][ord(seq2[y - 1])-48]
-            column[y] = min(column[y] + pen_add_suppr, column[y - 1] + pen_add_suppr, last + cost)
+            column[y] = min(column[y] + 2, column[y - 1] + 2, last + cost)
             last = old
         if max_dist >= 0 and min(column) > max_dist:
             return -1
@@ -405,7 +412,7 @@ def distance(seq1, seq2, max_dist=-1):
         return -1
     return column[len2]
 
-def distance_(word1,word2) : 
+def distance(word1,word2) : 
     dico = { (-1,-1):0 }
     
     for i,c_i in enumerate(word1) :
