@@ -9,46 +9,55 @@ from PIL import Image
 import os
 import pygame
 from pygame.locals import *
+import pickle 
 import editdistance
 
 def init() :
+    file = open("distance_matrix.pk", 'rb') 
+    distance_matrix = pickle.load(file) 
+    file.close()
+    
     try :
         data = open("data.txt", "r", encoding="utf-8")
-        base = [[],[],[],[],[],[],[],[],[],[]]
+        base = []
+        label = []
         for line in data :
             digit,word = line.split("/")
-            base[int(digit)].append(word[0:-1])
+            base.append(word[0:-1])
+            label.append(int(digit))
         data.close()
     except :
-        base = [[],[],[],[],[],[],[],[],[],[]]
-    return base 
+        base = []
+        label = []
+    return base, label, distance_matrix
 
-def close(base) :
+def close(base,label) :
     data = open("data.txt", "w", encoding="utf-8")
-    for i in range(10) :
-        for word in base[i] :
-            data.write(str(i)+"/"+word+"\n")
+    for i in range(len(base)) :
+        word = base[i]
+        data.write(str(label[i])+"/"+word+"\n")
     data.close()
     os.remove("temp.png")
     os.remove("new.png")
 
-def analyse(word,base) :
-    id_mini = -1
+def analyse(word,base,label,distance_matrix) :
+    label_mini = -1
     mini = -1
     
-    for i in range(10) :
-        for w in base[i] :
-            dist = editdistance.eval(word,w)
-            print(dist)
-            if dist < mini or mini < 0 :
-                mini = dist
-                id_mini = i
-    return id_mini
+    for i in range(len(base)) :
+        w = base[i]       
+            
+        dist = editdistance.eval(word,w)
+        print(dist)
+        if dist < mini or mini < 0 :
+            mini = dist
+            label_mini = label[i]
+    return label_mini
     
 def interface() : 
     #Initialisation
     pygame.init()
-    base = init()
+    base, label, distance_matrix = init()
 
     #Création de la fenêtre
     window = pygame.display.set_mode((560, 340),RESIZABLE)
@@ -98,7 +107,7 @@ def interface() :
         for event in pygame.event.get() :
             #gestion de la fermeture de la fenêtre
             if event.type == QUIT :
-                close(base)
+                close(base,label)
                 continuer = 0
                 pygame.quit()
                 
@@ -131,7 +140,6 @@ def interface() :
             event.pos[0] > 451 and event.pos[0] < 549 and \
             event.pos[1] > 11 and event.pos[1] < 109 :
                 learn = 1
-                base[digit].pop(-1)
                 window.blit(blearn, (340,10))
                 pygame.display.flip()
                 
@@ -146,7 +154,7 @@ def interface() :
                 word = picture2word(new_picture)
                 #print(word)
                 
-                digit = analyse(word,base)
+                digit = analyse(word,base,label,distance_matrix)
                 if digit == 0 :
                     window.blit(b0, (340,10))
                 elif digit == 1 :
@@ -185,7 +193,8 @@ def interface() :
             if event.type == MOUSEBUTTONDOWN and event.button == 1 and \
             event.pos[0] > 11 and event.pos[0] < 109 and \
             event.pos[1] > 121 and event.pos[1] < 219 and learn == 1 :
-                base[0].append(word)
+                base.append(word)
+                label.append(0)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -196,7 +205,8 @@ def interface() :
             if event.type == MOUSEBUTTONDOWN and event.button == 1 and \
             event.pos[0] > 121 and event.pos[0] < 219 and \
             event.pos[1] > 121 and event.pos[1] < 219 and learn == 1 :
-                base[1].append(word)
+                base.append(word)
+                label.append(1)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -207,7 +217,8 @@ def interface() :
             if event.type == MOUSEBUTTONDOWN and event.button == 1 and \
             event.pos[0] > 231 and event.pos[0] < 329 and \
             event.pos[1] > 121 and event.pos[1] < 219 and learn == 1 :
-                base[2].append(word)
+                base.append(word)
+                label.append(2)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -218,7 +229,8 @@ def interface() :
             if event.type == MOUSEBUTTONDOWN and event.button == 1 and \
             event.pos[0] > 341 and event.pos[0] < 439 and \
             event.pos[1] > 121 and event.pos[1] < 219 and learn == 1:
-                base[3].append(word)
+                base.append(word)
+                label.append(3)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -229,7 +241,8 @@ def interface() :
             if event.type == MOUSEBUTTONDOWN and event.button == 1 and \
             event.pos[0] > 451 and event.pos[0] < 549 and \
             event.pos[1] > 121 and event.pos[1] < 219 and learn == 1 :       
-                base[4].append(word)
+                base.append(word)
+                label.append(4)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -240,7 +253,8 @@ def interface() :
             if event.type == MOUSEBUTTONDOWN and event.button == 1 and \
             event.pos[0] > 11 and event.pos[0] < 109 and \
             event.pos[1] > 231 and event.pos[1] < 329 and learn == 1 :
-                base[5].append(word)
+                base.append(word)
+                label.append(5)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -251,7 +265,8 @@ def interface() :
             if event.type == MOUSEBUTTONDOWN and event.button == 1 and \
             event.pos[0] > 121 and event.pos[0] < 219 and \
             event.pos[1] > 231 and event.pos[1] < 329 and learn == 1 :
-                base[6].append(word)
+                base.append(word)
+                label.append(6)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -262,7 +277,8 @@ def interface() :
             if event.type == MOUSEBUTTONDOWN and event.button == 1 and \
             event.pos[0] > 231 and event.pos[0] < 329 and \
             event.pos[1] > 231 and event.pos[1] < 329 and learn == 1 :
-                base[7].append(word)
+                base.append(word)
+                label.append(7)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -273,7 +289,8 @@ def interface() :
             if event.type == MOUSEBUTTONDOWN and event.button == 1 and \
             event.pos[0] > 341 and event.pos[0] < 439 and \
             event.pos[1] > 231 and event.pos[1] < 329 and learn == 1 :
-                base[8].append(word)
+                base.append(word)
+                label.append(8)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -284,7 +301,8 @@ def interface() :
             if event.type == MOUSEBUTTONDOWN and event.button == 1 and \
             event.pos[0] > 451 and event.pos[0] < 549 and \
             event.pos[1] > 231 and event.pos[1] < 329 and learn == 1 :
-                base[9].append(word)
+                base.append(word)
+                label.append(9)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
