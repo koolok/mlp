@@ -23,7 +23,7 @@ def pen_mat(a,b,c,d,e):
     return mat
     
     
-print(pen_mat(1.0,1.2,1.4,1.8,2))
+pen_mat = pen_mat(0,1,2,3,4)
 
 
 

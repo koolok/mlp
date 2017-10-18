@@ -8,8 +8,7 @@ Created on Tue Oct 17 12:55:54 2017
 
 import numpy as np
 import pickle 
-import editdistance
-
+from digit import distance
 
 def init() :
     try :
@@ -30,7 +29,7 @@ distance_matrix = np.zeros((len(base),len(base)))
 for i in range(len(base)) :
     for j in range(len(base)) :
         if i != j :
-            distance_matrix[i,j] = editdistance.eval(base[i],base[j])
+            distance_matrix[i,j] = distance(base[i],base[j])
     
 file = open('distance_matrix.pk', 'wb') 
 

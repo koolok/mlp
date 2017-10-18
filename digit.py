@@ -13,7 +13,6 @@ from pygame.locals import *
 import numpy as np
 from collections import deque
 import pickle 
-import editdistance
 
 def init() :
     file = open("distance_matrix.pk", 'rb') 
@@ -41,7 +40,7 @@ def update_matrix(base, distance_matrix, word) :
     distance_matrix = np.hstack([distance_matrix,newcol])
     
     for i in range(len(distance_matrix)-1) :
-        distance_matrix[-1][i] = distance_matrix[i][-1] = editdistance.eval(word,base[i])
+        distance_matrix[-1][i] = distance_matrix[i][-1] = distance(word,base[i])
         
     file = open('distance_matrix.pk', 'wb') 
 
@@ -120,6 +119,11 @@ def interface() :
     
     learn = 0
     continuer = 1
+    
+    # saving the last px used for smoothing
+    last_x = 0
+    last_y = 0
+    
     while continuer :
         for event in pygame.event.get() :
             #gestion de la fermeture de la fenêtre
@@ -133,8 +137,13 @@ def interface() :
             event.pos[0] > 11 and event.pos[0] < 109 and \
             event.pos[1] > 11 and event.pos[1] < 109 :
                 learn = 1
+                new_x = event.pos[0]
+                new_y = event.pos[1]
+                
                 window.blit(black, (340,10))
-                drawPixel(picture,event.pos[0]-10,event.pos[1]-10)
+                
+                pygame.draw.line(picture,last_x-10,new_x-10,last_y-10,new_y-10)
+                #drawPixel(picture,event.pos[0]-10,event.pos[1]-10)
                 picture.save("temp.png")
                 draw = pygame.image.load("temp.png").convert()
                 window.blit(draw, (10,10))
