@@ -9,7 +9,9 @@ from PIL import Image
 import os
 import pygame
 from pygame.locals import *
-import editdistance
+import numpy as np
+from collections import deque
+
 
 def init() :
     try :
@@ -38,7 +40,7 @@ def analyse(word,base) :
     
     for i in range(10) :
         for w in base[i] :
-            dist = editdistance.eval(word,w)
+            dist = distance(word,w)
             print(dist)
             if dist < mini or mini < 0 :
                 mini = dist
@@ -310,28 +312,47 @@ def drawPixel(picture,x,y) :
     picture.putpixel((x+1,y),p)
     picture.putpixel((x+1,y+1),p)
     
+    
+
+def pen_mat(a,b,c,d,e):
+    tmp = deque([a,b,c,d,e,d,c,b])
+    mat = np.zeros(shape=(8,8))
+    for i_row in range(0,8):
+        mat[i_row] = tmp
+        tmp.rotate(1)
+    return mat
+    
+    
+pen_mat = pen_mat(0,1,2,3,4)
+pen_add_suppr = 2
+
 def distance(word1,word2) : 
     dico = { (-1,-1):0 }
+    
     for i,c_i in enumerate(word1) :
-        dico[i,-1] = dico[i-1,-1]+1
-        dico[-1,i] = dico[-1,i-1]+1
+        dico[i,-1] = dico[i-1,-1]+pen_add_suppr
+        dico[-1,i] = dico[-1,i-1]+pen_add_suppr
         for j,c_j in enumerate(word2) :
+            c_i_int = ord(c_i) - ord('0')
+            c_j_int = ord(c_j) - ord('0')
             """print(i,c_i,j,c_j)"""
             option = []
             if (i-1,j) in dico :
-                x = dico[i-1,j]+1
+                x = dico[i-1,j]+pen_add_suppr
                 option.append(x)
             if (i,j-1) in dico :
-                x = dico[i,j-1]+1
+                x = dico[i,j-1]+pen_add_suppr
                 option.append(x)
             if (i-1,j-1) in dico :
-                x = dico[i-1,j-1] + (1 if c_i != c_j else 0)
+                x = dico[i-1,j-1] + pen_mat[c_i_int,c_j_int]
                 option.append(x)
             dico[i,j] = min(option)
             """print(option)
             print(dist)
             print()"""
     return dico[len(word1)-1, len(word2)-1]
+
+
 
 def word2picture(word) :
     """fonction affichant le contour correpondant au mot entré en paramètre"""
