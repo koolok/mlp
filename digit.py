@@ -5,7 +5,7 @@ Created on Wed Jun 18 09:20:13 2016
 @author: remi
 """
 
-from PIL import Image
+from PIL import Image, ImageDraw
 import os
 import pygame
 import numpy as np
@@ -16,6 +16,10 @@ from collections import deque
 import pickle 
 #import editdistance
 from array import array
+
+last_x = 0;
+last_y = 0;
+
 
 def init() :
     try :
@@ -172,6 +176,7 @@ def interface() :
     #création de l'image destination et mise en blanc
     picture = Image.new("RGB",(100,100))
     initPicture(picture)
+    draw_img = ImageDraw.Draw(picture)
     
     #Raffraichissement de la fenêtre
     pygame.display.flip()
@@ -190,7 +195,14 @@ def interface() :
                 close(base,label,distance_matrix)
                 continuer = 0
                 pygame.quit()
-                
+            
+            
+            if event.type == MOUSEBUTTONDOWN and event.button == 1 and \
+            event.pos[0] > 11 and event.pos[0] < 109 and \
+            event.pos[1] > 11 and event.pos[1] < 109 :
+                last_x = event.pos[0]
+                last_y = event.pos[1]
+            
             #gestion du dessin
             if event.type == MOUSEMOTION and event.buttons[0] == 1 and \
             event.pos[0] > 11 and event.pos[0] < 109 and \
@@ -201,7 +213,9 @@ def interface() :
                 
                 window.blit(black, (340,10))
                 
-                pygame.draw.line(picture,last_x-10,new_x-10,last_y-10,new_y-10)
+                draw_img.line((last_x-10,last_y-10,new_x-10,new_y-10),fill='black',width=5)
+                last_x = new_x
+                last_y = new_y
                 #drawPixel(picture,event.pos[0]-10,event.pos[1]-10)
                 picture.save("temp.png")
                 draw = pygame.image.load("temp.png").convert()
@@ -408,7 +422,9 @@ def interface() :
                 window.blit(black, (340,10))
                 pygame.display.flip()
             
-def initPicture(picture) :              
+def initPicture(picture) :
+    last_x = 0
+    last_y = 0             
     for x in range(100) : 
         for y in range(100) :
             picture.putpixel((x,y),(255,255,255))
