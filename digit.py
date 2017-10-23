@@ -14,7 +14,8 @@ from pygame.locals import *
 import numpy as np
 from collections import deque
 import pickle 
-#import editdistance
+from multiprocessing import Pool
+
 from array import array
 
 last_x = 0;
@@ -82,6 +83,24 @@ def analyse(word,base,label) :
             mini = dist
             label_mini = label[i]
     return label_mini
+
+def analyse_multi(word,base,label,k=1) :
+        
+    pool = Pool()
+    
+    all_distance = pool.starmap_async(distance, zip(base,[word]*len(base))).get()
+
+    all_distance = dict(zip(label, all_distance))
+    
+    all_distance = sorted(label, key=all_distance.__getitem__)
+    
+    votes = [0]*10
+    
+    for i in range(k):
+        votes[all_distance[i]] +=1
+                
+    return votes.index(max(votes))
+    
 
 def analyse_triangle(word,base,label,distance_matrix) :
     if len(base) == 0 :
@@ -252,7 +271,7 @@ def interface() :
                 new_picture = Image.open("new.png")                
                 word = picture2word(new_picture)
                 
-                digit = analyse_triangle(word,base,label,distance_matrix)
+                digit = analyse_multi(word,base,label,3)
                 if digit == 0 :
                     window.blit(b0, (340,10))
                 elif digit == 1 :
