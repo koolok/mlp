@@ -51,8 +51,12 @@ def update_matrix(base, distance_matrix, word) :
     newcol = np.zeros((len(distance_matrix),1))
     distance_matrix = np.hstack([distance_matrix,newcol])
     
+    pool = Pool()
+    
+    all_distance = pool.starmap_async(distance, zip(base,[word]*len(base))).get()
+    
     for i in range(len(distance_matrix)-1) :
-        distance_matrix[-1][i] = distance_matrix[i][-1] = distance(word,base[i])
+        distance_matrix[-1][i] = distance_matrix[i][-1] = all_distance[i]
         
     return distance_matrix
 
