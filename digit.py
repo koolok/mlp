@@ -85,6 +85,10 @@ def analyse(word,base,label) :
     return label_mini
 
 def analyse_multi(word,base,label,k=1) :
+    if len(base) == 0 :
+        return -1
+    if len(base) == 1 :
+        return label[0]
         
     pool = Pool()
     
@@ -150,6 +154,62 @@ def analyse_triangle(word,base,label,distance_matrix) :
         return label[w1]
     else :
         return label[w2]
+    
+def analyse_triangle_knn(word,base,label,distance_matrix,k) :
+    if len(base) == 0 :
+        return -1
+    if len(base) == 1 :
+        return label[0]
+    
+    sv_k = k
+    
+    if k == 1:
+        k = 2
+    
+    pool = list(range(len(base)))
+    
+    w_list = {}
+    
+    for i in range(k) :
+        w = random.choice(pool)
+        pool.remove(w)
+        
+        w_list[distance(base[w],word)] = w
+        
+    print(w_list)
+        
+    while pool != [] :
+        
+        sorted_keys = sorted(w_list)
+        
+        maxi1 = sorted_keys[-1]
+        maxi2 = sorted_keys[-2]
+        
+        for i in pool :
+            if distance_matrix[i][w_list[maxi1]] < maxi1 - maxi2 or distance_matrix[i][w_list[maxi1]] > maxi1 + maxi2 :
+                pool.remove(i)
+                
+        del w_list[maxi1]
+        if pool == [] :
+            break
+        
+        w = random.choice(pool)
+        pool.remove(w)
+        
+        w_list[distance(base[w],word)] = w
+    
+    if sv_k == 1 :
+        for w in w_list :
+            return label[w_list[w]]
+        
+    
+    votes = [0]*10
+    
+    for w in w_list:
+        votes[label[w_list[w]]] +=1
+                
+    return votes.index(max(votes))
+    
         
     
 def interface() : 
@@ -271,7 +331,7 @@ def interface() :
                 new_picture = Image.open("new.png")                
                 word = picture2word(new_picture)
                 
-                digit = analyse_multi(word,base,label,3)
+                digit = analyse_triangle_knn(word,base,label,distance_matrix,3)
                 if digit == 0 :
                     window.blit(b0, (340,10))
                 elif digit == 1 :
