@@ -171,6 +171,8 @@ def analyse_triangle_knn(word,base,label,distance_matrix,k) :
     w_list = {}
     
     for i in range(k) :
+        if pool == [] :
+            break
         w = random.choice(pool)
         pool.remove(w)
         
