@@ -11,10 +11,10 @@ import pygame
 import numpy as np
 import random
 from pygame.locals import *
-import numpy as np
 from collections import deque
 import pickle 
 from multiprocessing import Pool
+from scipy.ndimage.interpolation import zoom
 
 from array import array
 
@@ -433,7 +433,7 @@ def interface() :
             event.pos[1] > 121 and event.pos[1] < 219 and learn == 1 :       
                 base.append(word)
                 label.append(4)
-                distance_matrix = distance_matrix = update_matrix(base, distance_matrix, word)
+                distance_matrix = update_matrix(base, distance_matrix, word)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -946,6 +946,37 @@ def clean_picture(picture,w,h) :
         
     return picture
     
+
+def zoomout(img_name_in, img_name_out):
+    img = Image.open('temp.png')
+    img_ar = np.asarray(img.convert('L'))
+    
+    px, py = np.where(img_ar == 0)
+    
+    x_min = px.min()
+    y_min = py.min()
+    x_max = px.max()
+    y_max = py.max()
+    
+    delta_x = x_max - x_min
+    delta_y = y_max - y_min
+    
+    if (delta_x > 50 or delta_y > 50):
+        # zooming by .5
+        img_new = np.ones([100,100])*255
+        img_new[25:75,25:75] = zoom(img_ar,zoom=0.5,order=0,mode='wrap')
+        #TODO add img_new
+        
+        for x in range(len(img_new)):
+            for y in range(len(img_new[0])):
+                if img_new[x,y] < 255:
+                    img_new[x,y] = 0
+                    
+        Image.fromarray(np.uint8(img_new)).save('temp2.png')
+        return True
+    else:
+        return False
+
 
 #word2picture(picture2word("0b.png"))
 #word2picture(picture2word("0d.png"))
