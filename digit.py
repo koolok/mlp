@@ -165,6 +165,8 @@ def analyse_triangle_knn(word,base,label,distance_matrix,k) :
     if len(base) == 1 :
         return label[0]
     
+    k += 1
+    
     sv_k = k
     
     if k == 1:
@@ -211,6 +213,7 @@ def analyse_triangle_knn(word,base,label,distance_matrix,k) :
     
     votes = [0]*10
     
+    
     for w in w_list:
         votes[label[w_list[w]]] +=1
                 
@@ -242,7 +245,7 @@ def interface() :
     b9 = pygame.image.load("9.png").convert()
     blearn = pygame.image.load("?.png").convert()
     black = pygame.image.load("noir.png").convert()
-    bRM = pygame.image.load("RM.png").convert()
+    bRM = pygame.image.load("ADD.png").convert()
     window.blit(draw, (10,10))
     window.blit(cancel, (120,10))
     window.blit(validate, (230,10))
