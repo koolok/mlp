@@ -12,7 +12,7 @@ import numpy as np
 import random
 from pygame.locals import *
 import pickle 
-from multiprocessing import Pool
+from multiprocessing import Pool, cpu_count, Process, Manager
 from scipy.ndimage.interpolation import zoom
 
 from distance import distance
@@ -158,11 +158,33 @@ def analyse_triangle(word,base,label,distance_matrix) :
     else :
         return label[w2]
     
-def analyse_triangle_knn(word,base,label,distance_matrix,k) :
+def analyse_triangle_knn_multi(word,base,label,distance_matrix,k) :
+    q = Manager().Queue()
+    
+    cpu = cpu_count()
+    
+    p_list = []
+    
+    for i in range(cpu) :        
+        p = Process(target=analyse_triangle_knn, args=(word,base,label,distance_matrix,k,q))
+        p.start()
+        p_list.append(p)
+        
+    result = q.get()
+    
+    for p in p_list :
+        p.terminate()
+        
+    return result
+    
+    
+
+    
+def analyse_triangle_knn(word,base,label,distance_matrix,k,q) :
     if len(base) == 0 :
-        return -1
+        q.put(-1)
     if len(base) == 1 :
-        return label[0]
+        q.put(label[0])
     
     k += 1
     
@@ -207,7 +229,7 @@ def analyse_triangle_knn(word,base,label,distance_matrix,k) :
     
     if sv_k == 1 :
         for w in w_list :
-            return label[w_list[w]]
+            q.put(label[w_list[w]])
         
     
     votes = [0]*10
@@ -216,7 +238,7 @@ def analyse_triangle_knn(word,base,label,distance_matrix,k) :
     for w in w_list:
         votes[label[w_list[w]]] +=1
                 
-    return votes.index(max(votes))
+    q.put(votes.index(max(votes)))
     
         
     
@@ -339,7 +361,7 @@ def interface() :
                 new_picture = Image.open("new.png")                
                 word = picture2word(new_picture)
                 
-                digit = analyse_triangle_knn(word,base,label,distance_matrix,3)
+                digit = analyse_triangle_knn_multi(word,base,label,distance_matrix,3)
                 if digit == 0 :
                     window.blit(b0, (340,10))
                 elif digit == 1 :
