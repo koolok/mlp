@@ -66,9 +66,15 @@ def close(base,label,distance_matrix) :
         word = base[i]
         data.write(str(label[i])+"/"+word+"\n")
     data.close()
-    os.remove("temp.png")
-    os.remove("new.png")
     
+    try :
+        os.remove("temp.png")
+        os.remove("new.png")
+        os.remove("new2.png")
+    except :
+        pass
+        
+        
     file = open('distance_matrix.pk', 'wb') 
     pickle.dump(distance_matrix, file) 
     file.close()
@@ -193,9 +199,9 @@ def interface() :
                 new_picture = Image.open("new.png")                
                 word = picture2word(new_picture)
                 
-                word2 = None
                 digit = analyse.analyse_triangle_knn_multi(word,base,label,distance_matrix,3)
 
+                word2 = None
                 if (zoomout("new.png","new2.png")):
                     new_picture2 = Image.open("new2.png")
                     word2 = picture2word(new_picture2)
@@ -801,8 +807,8 @@ def zoomout(img_name_in, img_name_out):
             for y in range(len(img_new[0])):
                 if img_new[x,y] < 255:
                     img_new[x,y] = 0
-                    
-        Image.fromarray(np.uint8(img_new)).save(img_name_out)
+        img_new2 = Image.fromarray(np.uint8(img_new)).convert('RGB')
+        img_new2.save(img_name_out)
         return True
     else:
         return False
