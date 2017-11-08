@@ -9,14 +9,14 @@ from PIL import Image, ImageDraw
 import os
 import pygame
 import numpy as np
-import random
 from pygame.locals import *
-from collections import deque
 import pickle 
-from multiprocessing import Pool
 from scipy.ndimage.interpolation import zoom
+from multiprocessing import Pool
+import analyse
 
-from array import array
+
+from distance import distance
 
 last_x = 0;
 last_y = 0;
@@ -73,150 +73,6 @@ def close(base,label,distance_matrix) :
     pickle.dump(distance_matrix, file) 
     file.close()
 
-def analyse(word,base,label) :
-    label_mini = -1
-    mini = -1
-
-    for i in range(len(base)) :
-        w = base[i]
-            
-        dist = distance(word,w)
-#        dist = editdistance.eval(word,w)
-        print(dist)
-        if dist < mini or mini < 0 :
-            mini = dist
-            label_mini = label[i]
-    return label_mini
-
-def analyse_multi(word,base,label,k=1) :
-    if len(base) == 0 :
-        return -1
-    if len(base) == 1 :
-        return label[0]
-        
-    pool = Pool()
-    
-    all_distance = pool.starmap_async(distance, zip(base,[word]*len(base))).get()
-
-    all_distance = dict(zip(label, all_distance))
-    
-    all_distance = sorted(label, key=all_distance.__getitem__)
-    
-    votes = [0]*10
-    
-    for i in range(k):
-        votes[all_distance[i]] +=1
-                
-    return votes.index(max(votes))
-    
-
-def analyse_triangle(word,base,label,distance_matrix) :
-    if len(base) == 0 :
-        return -1
-    if len(base) == 1 :
-        return label[0]
-    
-    pool = list(range(len(base)))
-    
-    w1 = random.choice(pool)
-    pool.remove(w1)
-    
-    w2 = random.choice(pool)
-    pool.remove(w2)
-
-#    dist_w1 = editdistance.eval(base[w1],word)
-#    dist_w2 = editdistance.eval(base[w2],word)
-    dist_w1 = distance(base[w1],word)
-    dist_w2 = distance(base[w2],word)
-    
-    while (pool != []) :
-        if dist_w1 > dist_w2 :
-            for i in pool :
-                if distance_matrix[i][w1] < dist_w1 - dist_w2 or distance_matrix[i][w1] > dist_w1 + dist_w2 :
-                    pool.remove(i)
-                    
-            if pool == [] :
-                break
-            w1 = random.choice(pool)
-            pool.remove(w1)
-            dist_w1 = distance(base[w1],word)
-#            dist_w1 = editdistance.eval(base[w1],word)
-                    
-        else :
-            for i in pool :
-                if distance_matrix[i][w1] < dist_w2 - dist_w1 or distance_matrix[i][w1] > dist_w2 + dist_w1 :
-                    pool.remove(i)
-            
-            if pool == [] :
-                break
-            w2 = random.choice(pool)
-            pool.remove(w2)
-            dist_w2 = distance(base[w2],word)
-#            dist_w2 = editdistance.eval(base[w2],word)
-            
-    if (dist_w1 < dist_w2) :
-        return label[w1]
-    else :
-        return label[w2]
-    
-def analyse_triangle_knn(word,base,label,distance_matrix,k) :
-    if len(base) == 0 :
-        return -1
-    if len(base) == 1 :
-        return label[0]
-    
-    sv_k = k
-    
-    if k == 1:
-        k = 2
-    
-    pool = list(range(len(base)))
-    
-    w_list = {}
-    
-    for i in range(k) :
-        if pool == [] :
-            break
-        w = random.choice(pool)
-        pool.remove(w)
-        
-        w_list[distance(base[w],word)] = w
-        
-    print(w_list)
-        
-    while pool != [] :
-        
-        sorted_keys = sorted(w_list)
-        
-        maxi1 = sorted_keys[-1]
-        maxi2 = sorted_keys[-2]
-        
-        for i in pool :
-            if distance_matrix[i][w_list[maxi1]] < maxi1 - maxi2 or distance_matrix[i][w_list[maxi1]] > maxi1 + maxi2 :
-                pool.remove(i)
-                
-        del w_list[maxi1]
-        if pool == [] :
-            break
-        
-        w = random.choice(pool)
-        pool.remove(w)
-        
-        w_list[distance(base[w],word)] = w
-    
-    if sv_k == 1 :
-        for w in w_list :
-            return label[w_list[w]]
-        
-    
-    votes = [0]*10
-    
-    for w in w_list:
-        votes[label[w_list[w]]] +=1
-                
-    return votes.index(max(votes))
-    
-        
     
 def interface() : 
     #Initialisation
@@ -242,7 +98,7 @@ def interface() :
     b9 = pygame.image.load("9.png").convert()
     blearn = pygame.image.load("?.png").convert()
     black = pygame.image.load("noir.png").convert()
-    bRM = pygame.image.load("RM.png").convert()
+    bRM = pygame.image.load("ADD.png").convert()
     window.blit(draw, (10,10))
     window.blit(cancel, (120,10))
     window.blit(validate, (230,10))
@@ -338,12 +194,13 @@ def interface() :
                 word = picture2word(new_picture)
                 
                 word2 = None
+                digit = analyse.analyse_triangle_knn_multi(word,base,label,distance_matrix,3)
+
                 if (zoomout("new.png","new2.png")):
                     new_picture2 = Image.open("new2.png")
                     word2 = picture2word(new_picture2)
-                
-                
-                digit = analyse_triangle_knn(word,base,label,distance_matrix,3)
+                    digit2 = analyse.analyse_triangle_knn_multi(word2,base,label,distance_matrix,3)
+                    
                 if digit == 0 :
                     window.blit(b0, (340,10))
                 elif digit == 1 :
@@ -571,79 +428,6 @@ def drawPixel(picture,x,y) :
     picture.putpixel((x+1,y-1),p)
     picture.putpixel((x+1,y),p)
     picture.putpixel((x+1,y+1),p)
-    
-    
-
-def pen_mat(a,b,c,d,e):
-    tmp = deque([a,b,c,d,e,d,c,b])
-    mat = np.zeros(shape=(8,8))
-    for i_row in range(0,8):
-        mat[i_row] = tmp
-        tmp.rotate(1)
-    return mat
-    
-    
-pen_mat = pen_mat(0,1,2,3,4)
-pen_add_suppr = 2
-
-def distance_(seq1, seq2, max_dist=-1):
-    if seq1 == seq2:
-        return 0
-	
-    len1, len2 = len(seq1), len(seq2)
-    if max_dist >= 0 and abs(len1 - len2) > max_dist:
-        return -1
-    if len1 == 0:
-        return len2
-    if len2 == 0:
-        return len1
-    if len1 < len2:
-        len1, len2 = len2, len1
-        seq1, seq2 = seq2, seq1
-	
-    column = array('L', range(0,2*(len2 + 1),2))
-	
-    for x in range(1, len1 + 1):
-        column[0] = x
-        last = x - 1
-        for y in range(1, len2 + 1):
-            old = column[y]
-            cost = pen_mat[ord(seq1[x - 1])-48][ord(seq2[y - 1])-48]
-            column[y] = min(column[y] + 2, column[y - 1] + 2, last + cost)
-            last = old
-        if max_dist >= 0 and min(column) > max_dist:
-            return -1
-	
-    if max_dist >= 0 and column[len2] > max_dist:
-        return -1
-    return column[len2]
-
-def distance(word1,word2) : 
-    dico = { (-1,-1):0 }
-    
-    for i,c_i in enumerate(word1) :
-        dico[i,-1] = dico[i-1,-1]+pen_add_suppr
-        dico[-1,i] = dico[-1,i-1]+pen_add_suppr
-        for j,c_j in enumerate(word2) :
-            c_i_int = ord(c_i) - ord('0')
-            c_j_int = ord(c_j) - ord('0')
-            """print(i,c_i,j,c_j)"""
-            option = []
-            if (i-1,j) in dico :
-                x = dico[i-1,j]+pen_add_suppr
-                option.append(x)
-            if (i,j-1) in dico :
-                x = dico[i,j-1]+pen_add_suppr
-                option.append(x)
-            if (i-1,j-1) in dico :
-                x = dico[i-1,j-1] + pen_mat[c_i_int,c_j_int]
-                option.append(x)
-            dico[i,j] = min(option)
-            """print(option)
-            print(dist)
-            print()"""
-    return dico[len(word1)-1, len(word2)-1]
-
 
 
 def word2picture(word) :
