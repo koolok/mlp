@@ -246,9 +246,9 @@ def interface() :
                 label.append(0)
                 distance_matrix = update_matrix(base, distance_matrix, word)
                 if (word2 != None):
-                    base.append(word)
+                    base.append(word2)
                     label.append(0)
-                    distance_matrix = update_matrix(base, distance_matrix, word)
+                    distance_matrix = update_matrix(base, distance_matrix, word2)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -263,9 +263,9 @@ def interface() :
                 label.append(1)
                 distance_matrix = update_matrix(base, distance_matrix, word)
                 if (word2 != None):
-                    base.append(word)
+                    base.append(word2)
                     label.append(1)
-                    distance_matrix = update_matrix(base, distance_matrix, word)
+                    distance_matrix = update_matrix(base, distance_matrix, word2)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -280,9 +280,9 @@ def interface() :
                 label.append(2)
                 distance_matrix = update_matrix(base, distance_matrix, word)
                 if (word2 != None):
-                    base.append(word)
+                    base.append(word2)
                     label.append(2)
-                    distance_matrix = update_matrix(base, distance_matrix, word)
+                    distance_matrix = update_matrix(base, distance_matrix, word2)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -297,9 +297,9 @@ def interface() :
                 label.append(3)
                 distance_matrix = update_matrix(base, distance_matrix, word)
                 if (word2 != None):
-                    base.append(word)
+                    base.append(word2)
                     label.append(3)
-                    distance_matrix = update_matrix(base, distance_matrix, word)
+                    distance_matrix = update_matrix(base, distance_matrix, word2)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -314,9 +314,9 @@ def interface() :
                 label.append(4)
                 distance_matrix = update_matrix(base, distance_matrix, word)
                 if (word2 != None):
-                    base.append(word)
+                    base.append(word2)
                     label.append(4)
-                    distance_matrix = update_matrix(base, distance_matrix, word)
+                    distance_matrix = update_matrix(base, distance_matrix, word2)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -331,9 +331,9 @@ def interface() :
                 label.append(5)
                 distance_matrix = update_matrix(base, distance_matrix, word)
                 if (word2 != None):
-                    base.append(word)
+                    base.append(word2)
                     label.append(5)
-                    distance_matrix = update_matrix(base, distance_matrix, word)
+                    distance_matrix = update_matrix(base, distance_matrix, word2)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -348,9 +348,9 @@ def interface() :
                 label.append(6)
                 distance_matrix = update_matrix(base, distance_matrix, word)
                 if (word2 != None):
-                    base.append(word)
+                    base.append(word2)
                     label.append(6)
-                    distance_matrix = update_matrix(base, distance_matrix, word)
+                    distance_matrix = update_matrix(base, distance_matrix, word2)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -365,9 +365,9 @@ def interface() :
                 label.append(7)
                 distance_matrix = update_matrix(base, distance_matrix, word)
                 if (word2 != None):
-                    base.append(word)
+                    base.append(word2)
                     label.append(7)
-                    distance_matrix = update_matrix(base, distance_matrix, word)
+                    distance_matrix = update_matrix(base, distance_matrix, word2)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -382,9 +382,9 @@ def interface() :
                 label.append(8)
                 distance_matrix = update_matrix(base, distance_matrix, word)
                 if (word2 != None):
-                    base.append(word)
+                    base.append(word2)
                     label.append(8)
-                    distance_matrix = update_matrix(base, distance_matrix, word)
+                    distance_matrix = update_matrix(base, distance_matrix, word2)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -399,9 +399,9 @@ def interface() :
                 label.append(9)
                 distance_matrix = update_matrix(base, distance_matrix, word)
                 if (word2 != None):
-                    base.append(word)
+                    base.append(word2)
                     label.append(9)
-                    distance_matrix = update_matrix(base, distance_matrix, word)
+                    distance_matrix = update_matrix(base, distance_matrix, word2)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
