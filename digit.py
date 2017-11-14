@@ -66,9 +66,15 @@ def close(base,label,distance_matrix) :
         word = base[i]
         data.write(str(label[i])+"/"+word+"\n")
     data.close()
-    os.remove("temp.png")
-    os.remove("new.png")
     
+    try :
+        os.remove("temp.png")
+        os.remove("new.png")
+        os.remove("new2.png")
+    except :
+        pass
+        
+        
     file = open('distance_matrix.pk', 'wb') 
     pickle.dump(distance_matrix, file) 
     file.close()
@@ -80,7 +86,7 @@ def interface() :
     base, label, distance_matrix = init()
 
     #Création de la fenêtre
-    window = pygame.display.set_mode((560, 340),RESIZABLE)
+    window = pygame.display.set_mode((560, 340),pygame.RESIZABLE)
     
     #chargement et application de la zone de dessin et des boutons
     draw = pygame.image.load("vide.png").convert()
@@ -194,6 +200,13 @@ def interface() :
                 word = picture2word(new_picture)
                 
                 digit = analyse.analyse_triangle_knn_multi(word,base,label,distance_matrix,3)
+
+                word2 = None
+                if (zoomout("new.png","new2.png")):
+                    new_picture2 = Image.open("new2.png")
+                    word2 = picture2word(new_picture2)
+                    digit2 = analyse.analyse_triangle_knn_multi(word2,base,label,distance_matrix,3)
+                    
                 if digit == 0 :
                     window.blit(b0, (340,10))
                 elif digit == 1 :
@@ -238,6 +251,10 @@ def interface() :
                 base.append(word)
                 label.append(0)
                 distance_matrix = update_matrix(base, distance_matrix, word)
+                if (word2 != None):
+                    base.append(word2)
+                    label.append(0)
+                    distance_matrix = update_matrix(base, distance_matrix, word2)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -251,6 +268,10 @@ def interface() :
                 base.append(word)
                 label.append(1)
                 distance_matrix = update_matrix(base, distance_matrix, word)
+                if (word2 != None):
+                    base.append(word2)
+                    label.append(1)
+                    distance_matrix = update_matrix(base, distance_matrix, word2)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -264,6 +285,10 @@ def interface() :
                 base.append(word)
                 label.append(2)
                 distance_matrix = update_matrix(base, distance_matrix, word)
+                if (word2 != None):
+                    base.append(word2)
+                    label.append(2)
+                    distance_matrix = update_matrix(base, distance_matrix, word2)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -277,6 +302,10 @@ def interface() :
                 base.append(word)
                 label.append(3)
                 distance_matrix = update_matrix(base, distance_matrix, word)
+                if (word2 != None):
+                    base.append(word2)
+                    label.append(3)
+                    distance_matrix = update_matrix(base, distance_matrix, word2)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -290,6 +319,10 @@ def interface() :
                 base.append(word)
                 label.append(4)
                 distance_matrix = update_matrix(base, distance_matrix, word)
+                if (word2 != None):
+                    base.append(word2)
+                    label.append(4)
+                    distance_matrix = update_matrix(base, distance_matrix, word2)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -303,6 +336,10 @@ def interface() :
                 base.append(word)
                 label.append(5)
                 distance_matrix = update_matrix(base, distance_matrix, word)
+                if (word2 != None):
+                    base.append(word2)
+                    label.append(5)
+                    distance_matrix = update_matrix(base, distance_matrix, word2)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -316,6 +353,10 @@ def interface() :
                 base.append(word)
                 label.append(6)
                 distance_matrix = update_matrix(base, distance_matrix, word)
+                if (word2 != None):
+                    base.append(word2)
+                    label.append(6)
+                    distance_matrix = update_matrix(base, distance_matrix, word2)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -329,6 +370,10 @@ def interface() :
                 base.append(word)
                 label.append(7)
                 distance_matrix = update_matrix(base, distance_matrix, word)
+                if (word2 != None):
+                    base.append(word2)
+                    label.append(7)
+                    distance_matrix = update_matrix(base, distance_matrix, word2)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -342,6 +387,10 @@ def interface() :
                 base.append(word)
                 label.append(8)
                 distance_matrix = update_matrix(base, distance_matrix, word)
+                if (word2 != None):
+                    base.append(word2)
+                    label.append(8)
+                    distance_matrix = update_matrix(base, distance_matrix, word2)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -355,6 +404,10 @@ def interface() :
                 base.append(word)
                 label.append(9)
                 distance_matrix = update_matrix(base, distance_matrix, word)
+                if (word2 != None):
+                    base.append(word2)
+                    label.append(9)
+                    distance_matrix = update_matrix(base, distance_matrix, word2)
                 learn = 0
                 initPicture(picture)
                 picture.save("temp.png")
@@ -731,7 +784,7 @@ def clean_picture(picture,w,h) :
     
 
 def zoomout(img_name_in, img_name_out):
-    img = Image.open('temp.png')
+    img = Image.open(img_name_in)
     img_ar = np.asarray(img.convert('L'))
     
     px, py = np.where(img_ar == 0)
@@ -754,8 +807,8 @@ def zoomout(img_name_in, img_name_out):
             for y in range(len(img_new[0])):
                 if img_new[x,y] < 255:
                     img_new[x,y] = 0
-                    
-        Image.fromarray(np.uint8(img_new)).save('temp2.png')
+        img_new2 = Image.fromarray(np.uint8(img_new)).convert('RGB')
+        img_new2.save(img_name_out)
         return True
     else:
         return False
