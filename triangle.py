@@ -8,7 +8,9 @@ Created on Tue Oct 17 12:55:54 2017
 
 import numpy as np
 import pickle 
-from digit import distance
+from distance import distance
+from multiprocessing import Pool
+
 
 def init() :
     try :
@@ -25,11 +27,20 @@ def init() :
 base = init()
 
 distance_matrix = np.zeros((len(base),len(base)))
-
-for i in range(len(base)) :
-    for j in range(len(base)) :
-        if i != j :
-            distance_matrix[i,j] = distance(base[i],base[j])
+         
+length = len(base)
+pool = Pool()
+for i in range(length) :
+    word = base[0]
+    
+    base.pop(0)
+    
+    all_distance = pool.starmap_async(distance, zip(base,[word]*len(base))).get()
+    
+    k = 0
+    for j in range(i+1,length) :
+        distance_matrix[i][j] = distance_matrix[j][i] = all_distance[k]
+        k += 1    
     
 file = open('distance_matrix.pk', 'wb') 
 
