@@ -20,14 +20,22 @@ def mnist_to_pickle() :
         data = train_images[i,:,:] * -1 + 256
         
         dataL = []
+        dataL.extend([256]*30)
         
         for line in data :
+            line = list(line)
+            line.insert(0,256)
+            line.append(256)
             dataL.extend(line)
-    
-        imageL = Image.new("L",(28,28))
+            
+        dataL.extend([256]*30)
+        
+        imageL = Image.new("L",(30,30))
         imageL.putdata(dataL)
         
         imageRGB = imageL.convert(mode="RGB")
+        
+        
         
         images.append(imageRGB)
         
@@ -46,11 +54,17 @@ def mnist_to_pickle() :
         data = test_images[i,:,:] * -1 + 256
         
         dataL = []
+        dataL.extend([256]*30)
         
         for line in data :
+            line = list(line)
+            line.insert(0,256)
+            line.append(256)
             dataL.extend(line)
-    
-        imageL = Image.new("L",(28,28))
+            
+        dataL.extend([256]*30)
+        
+        imageL = Image.new("L",(30,30))
         imageL.putdata(dataL)
         
         imageRGB = imageL.convert(mode="RGB")
