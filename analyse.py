@@ -8,7 +8,8 @@ Created on Tue Nov  7 13:54:42 2017
 
 import random
 from multiprocessing import Pool, cpu_count, Process, Manager
-from distance import distance
+#from distance import distance
+from editdistance import eval as distance
 
 
 def analyse(word,base,label) :
@@ -20,7 +21,7 @@ def analyse(word,base,label) :
             
         dist = distance(word,w)
 #        dist = editdistance.eval(word,w)
-        print(dist)
+#        print(dist)
         if dist < mini or mini < 0 :
             mini = dist
             label_mini = label[i]
@@ -105,7 +106,7 @@ def analyse_triangle_knn_multi(word,base,label,distance_matrix,k) :
     p_list = []
     
     for i in range(cpu) :        
-        p = Process(target=analyse_triangle_knn, args=(word,base,label,distance_matrix,k,q))
+        p = Process(target=analyse_triangle_knn_queue, args=(word,base,label,distance_matrix,k,q))
         p.start()
         p_list.append(p)
         
@@ -119,7 +120,7 @@ def analyse_triangle_knn_multi(word,base,label,distance_matrix,k) :
     
 
     
-def analyse_triangle_knn(word,base,label,distance_matrix,k,q) :
+def analyse_triangle_knn_queue(word,base,label,distance_matrix,k,q) :
     if len(base) == 0 :
         q.put(-1)
     if len(base) == 1 :
@@ -144,7 +145,7 @@ def analyse_triangle_knn(word,base,label,distance_matrix,k,q) :
         
         w_list[distance(base[w],word)] = w
         
-    print(w_list)
+#    print(w_list)
         
     while pool != [] :
         
@@ -164,7 +165,20 @@ def analyse_triangle_knn(word,base,label,distance_matrix,k,q) :
         w = random.choice(pool)
         pool.remove(w)
         
-        w_list[distance(base[w],word)] = w
+        d = distance(base[w],word)
+        
+        while d in w_list :
+            w = random.choice(pool)
+            pool.remove(w)
+           
+            d = distance(base[w],word)
+            if pool == [] :
+                break 
+            
+        if pool == [] :
+            break
+        
+        w_list[d] = w
     
     if sv_k == 1 :
         for w in w_list :
@@ -178,3 +192,78 @@ def analyse_triangle_knn(word,base,label,distance_matrix,k,q) :
         votes[label[w_list[w]]] +=1
                 
     q.put(votes.index(max(votes)))
+
+def analyse_triangle_knn(word,base,label,distance_matrix,k) :
+    if len(base) == 0 :
+        return -1
+    if len(base) == 1 :
+        return label[0]
+    
+    k += 1
+    
+    sv_k = k
+    
+    if k == 1:
+        k = 2
+    
+    pool = list(range(len(base)))
+    
+    w_list = {}
+    
+    for i in range(k) :
+        if pool == [] :
+            break
+        w = random.choice(pool)
+        pool.remove(w)
+        
+        w_list[distance(base[w],word)] = w
+        
+#    print(w_list)
+        
+    while pool != [] :
+        
+        sorted_keys = sorted(w_list)
+        print(len(pool))
+        
+        maxi1 = sorted_keys[-1]
+        maxi2 = sorted_keys[-2]
+        
+        for i in pool :
+            if distance_matrix[i][w_list[maxi1]] <= maxi1 - maxi2 or distance_matrix[i][w_list[maxi1]] >= maxi1 + maxi2 :
+                pool.remove(i)
+                
+        del w_list[maxi1]
+        if pool == [] :
+            break
+        
+        w = random.choice(pool)
+        pool.remove(w)
+        
+        d = distance(base[w],word)
+        
+        while d in w_list :
+            w = random.choice(pool)
+            pool.remove(w)
+           
+            d = distance(base[w],word)
+            
+            if pool == [] :
+                break 
+
+        if pool == [] :
+            break
+        
+        w_list[d] = w
+    
+    if sv_k == 1 :
+        for w in w_list :
+            return label[w_list[w]]
+        
+    
+    votes = [0]*10
+    
+    
+    for w in w_list:
+        votes[label[w_list[w]]] +=1
+                
+    return votes.index(max(votes))
