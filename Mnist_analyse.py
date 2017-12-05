@@ -66,9 +66,20 @@ def pickle_matrix(number_of_sample=1000) :
     sub_base = []
     sub_labels = []
     
-    for indice in indices :
-        sub_base.append(base[indice])
-        sub_labels.append(train_labels[indice])
+    max_ref = [number_of_sample//10] * 10
+    
+    i = 0
+    while len(sub_base) < number_of_sample :
+        if max_ref[train_labels[i]] > 0 :
+            sub_base.append(base[i])
+            sub_labels.append(train_labels[i])
+            max_ref[train_labels[i]] -= 1
+        i += 1
+    
+    
+#    for indice in indices :
+#        sub_base.append(base[indice])
+#        sub_labels.append(train_labels[indice])
         
     name = 'base_mnist_'+str(number_of_sample)+'.pk'
     file = open(name, 'wb') 
