@@ -19,6 +19,8 @@ def pen_mat(a,b,c,d,e):
     return mat
 
 
+#pen_mat = [[0,1,2,3,4,3,2,1],[1,0,1,2,3,4,3,2],[2,1,0,1,2,3,4,3],[3,2,1,0,1,2,3,4],[4,3,2,1,0,1,2,3],[3,4,3,2,1,0,1,2],[2,3,4,3,2,1,0,1],[1,2,3,4,3,2,1,0]]
+
 pen_mat = pen_mat(0,1,2,3,4)
 pen_add_suppr = 2
 
@@ -40,7 +42,8 @@ def distance(seq1, seq2, max_dist=-1):
         len1, len2 = len2, len1
         seq1, seq2 = seq2, seq1
 
-    column = array('L', range(0,2*(len2 + 1),2))
+#    column = array('L', range(0,2*(len2 + 1),2))
+    column = list(range(0,2*(len2 + 1),2))
 
     for x in range(1, len1 + 1):
         column[0] = x
