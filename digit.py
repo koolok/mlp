@@ -446,14 +446,11 @@ def word2picture(word) :
     w = 100
     h = 5
     
-    #partage du mot en caractères
-    tab = word.split()
-    #print(tab)
-    
     #tracer pixels par pixels
     p = (255,0,0)
     picture.putpixel((w,h),p)
-    for c in tab :
+    for i in range(len(word)) :
+        c = word[i]
         if (c == '0') :
             w = w+1
         if (c == '1') :
@@ -474,6 +471,7 @@ def word2picture(word) :
         if (c == '7') :
             w = w+1
             h = h-1
+        
         picture.putpixel((w,h),p)
     picture.show()
     #picture.save("test.png")
