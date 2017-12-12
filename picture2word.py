@@ -310,3 +310,85 @@ def clean_picture(picture,w,h) :
         picture = clean_picture(picture, w, h-1)
         
     return picture
+
+def reduce(word,size) :
+    ret = ""
+    L = []
+    i = 0
+    lenght = len(word)
+    while i < lenght :
+        c = word[i] if i != lenght else "z"
+        if (c == '0') :
+            L.append(['0',1])
+            i+=1
+            c = word[i] if i != lenght else "z"
+            while c == '0' :
+                L[-1][1] += 1
+                i+=1
+                c = word[i] if i != lenght else "z"
+        elif (c == '1') :
+            L.append(['1',1])
+            i+=1
+            c = word[i] if i != lenght else "z"
+            while c == '1' :
+                L[-1][1] += 1
+                i+=1
+                c = word[i] if i != lenght else "z"
+        elif (c == '2') :
+            L.append(['2',1])
+            i+=1
+            c = word[i] if i != lenght else "z"
+            while c == '2' :
+                L[-1][1] += 1
+                i+=1
+                c = word[i] if i != lenght else "z"
+        elif (c == '3') :
+            L.append(['3',1])
+            i+=1
+            c = word[i] if i != lenght else "z"
+            while c == '3' :
+                L[-1][1] += 1
+                i+=1
+                c = word[i] if i != lenght else "z"
+        elif (c == '4') :
+            L.append(['4',1])
+            i+=1
+            c = word[i] if i != lenght else "z"
+            while c == '4' :
+                L[-1][1] += 1
+                i+=1
+                c = word[i] if i != lenght else "z"
+        elif (c == '5') :
+            L.append(['5',1])
+            i+=1
+            c = word[i] if i != lenght else "z"
+            while c == '5' :
+                L[-1][1] += 1
+                i+=1
+                c = word[i] if i != lenght else "z"
+        elif (c == '6') :
+            L.append(['6',1])
+            i+=1
+            c = word[i] if i != lenght else "z"
+            while c == '6' :
+                L[-1][1] += 1
+                i+=1
+                c = word[i] if i != lenght else "z"
+        elif (c == '7') :
+            L.append(['7',1])
+            i+=1
+            c = word[i] if i != lenght else "z"
+            while c == '7' :
+                L[-1][1] += 1
+                i+=1
+                c = word[i] if i != lenght else "z"
+        
+    coef = lenght/size
+    for c in L :
+        ret += c[0]*round(c[1]/coef)
+    return ret
+
+def picture2word_(file) : 
+    size = 100
+    return reduce(picture2word(file),size)
+
