@@ -34,4 +34,4 @@ def analyse_multi(word,base,label,k=1) :
         votes[all_distance[i][0]] +=1
         Nearest.append(all_distance[i][2])
                 
-    return votes.index(max(votes))
+    return votes.index(max(votes)), Nearest
