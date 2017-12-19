@@ -126,6 +126,7 @@ cpdef distance_multi(str seq1, str seq2, int label, int max_dist=-1):
 cpdef distance_multi_GUI(str seq1, str seq2, int label, int max_dist=-1):
     if seq1 == seq2:
         return 0
+    sv_seq1 = seq1
 #
 #    cdef char *seq1
 #    cdef char *seq2
@@ -176,4 +177,4 @@ cpdef distance_multi_GUI(str seq1, str seq2, int label, int max_dist=-1):
 
     if max_dist >= 0 and column[len2] > max_dist:
         return -1
-    return (label,column[len2],seq1)
+    return (label,column[len2],sv_seq1)
