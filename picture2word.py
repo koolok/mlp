@@ -6,7 +6,7 @@ Created on Tue Nov 14 19:51:32 2017
 @author: koolok
 """
 
-def picture2word(picture) :
+def picture2word_(picture) :
     """fonction retournant le mot correspondant au pictogramme noir tracé dans
     le fichier entrer en paramètre"""
 
@@ -19,7 +19,7 @@ def picture2word(picture) :
     #recherche du pixel de départ pris en haut puis à gauche
     w = 0
     h = 0
-    while (picture.getpixel((w,h)) != (0,0,0)) :
+    while (picture.getpixel((w,h)) == (255,255,255)) :
         w = w+1
         if (w >= width) : 
             w = 0
@@ -42,234 +42,234 @@ def picture2word(picture) :
     while (end) :
         
         if (last == 0) :
-            if (picture.getpixel((w-1,h-1)) == (0,0,0)) :
+            if (picture.getpixel((w-1,h-1)) != (255,255,255)) :
                 last = 5
                 w = w-1
                 h = h-1
-            elif (picture.getpixel((w,h-1)) == (0,0,0)) :
+            elif (picture.getpixel((w,h-1)) != (255,255,255)) :
                 last = 6
                 h = h-1
-            elif (picture.getpixel((w+1,h-1)) == (0,0,0)) :
+            elif (picture.getpixel((w+1,h-1)) != (255,255,255)) :
                 last = 7
                 w = w+1
                 h = h-1
-            elif (picture.getpixel((w+1,h)) == (0,0,0)) :
+            elif (picture.getpixel((w+1,h)) != (255,255,255)) :
                 last = 0
                 w = w+1
-            elif (picture.getpixel((w+1,h+1)) == (0,0,0)) :
+            elif (picture.getpixel((w+1,h+1)) != (255,255,255)) :
                 last = 1
                 w = w+1
                 h = h+1
-            elif (picture.getpixel((w,h+1)) == (0,0,0)) :
+            elif (picture.getpixel((w,h+1)) != (255,255,255)) :
                 last = 2
                 h = h+1
-            elif (picture.getpixel((w-1,h+1)) == (0,0,0)) :
+            elif (picture.getpixel((w-1,h+1)) != (255,255,255)) :
                 last = 3
                 w = w-1
                 h = h+1
-            elif (picture.getpixel((w-1,h)) == (0,0,0)) :
+            elif (picture.getpixel((w-1,h)) != (255,255,255)) :
                 last = 4
                 w = w-1
         elif (last == 1) :
-            if (picture.getpixel((w,h-1)) == (0,0,0)) :
+            if (picture.getpixel((w,h-1)) != (255,255,255)) :
                 last = 6
                 h = h-1
-            elif (picture.getpixel((w+1,h-1)) == (0,0,0)) :
+            elif (picture.getpixel((w+1,h-1)) != (255,255,255)) :
                 last = 7
                 w = w+1
                 h = h-1
-            elif (picture.getpixel((w+1,h)) == (0,0,0)) :
+            elif (picture.getpixel((w+1,h)) != (255,255,255)) :
                 last = 0
                 w = w+1
-            elif (picture.getpixel((w+1,h+1)) == (0,0,0)) :
+            elif (picture.getpixel((w+1,h+1)) != (255,255,255)) :
                 last = 1
                 w = w+1
                 h = h+1
-            elif (picture.getpixel((w,h+1)) == (0,0,0)) :
+            elif (picture.getpixel((w,h+1)) != (255,255,255)) :
                 last = 2
                 h = h+1
-            elif (picture.getpixel((w-1,h+1)) == (0,0,0)) :
+            elif (picture.getpixel((w-1,h+1)) != (255,255,255)) :
                 last = 3
                 w = w-1
                 h = h+1
-            elif (picture.getpixel((w-1,h)) == (0,0,0)) :
+            elif (picture.getpixel((w-1,h)) != (255,255,255)) :
                 last = 4
                 w = w-1
-            elif (picture.getpixel((w-1,h-1)) == (0,0,0)) :
+            elif (picture.getpixel((w-1,h-1)) != (255,255,255)) :
                 last = 5
                 w = w-1
                 h = h-1
         elif (last == 2) :
-            if (picture.getpixel((w+1,h-1)) == (0,0,0)) :
+            if (picture.getpixel((w+1,h-1)) != (255,255,255)) :
                 last = 7
                 w = w+1
                 h = h-1
-            elif (picture.getpixel((w+1,h)) == (0,0,0)) :
+            elif (picture.getpixel((w+1,h)) != (255,255,255)) :
                 last = 0
                 w = w+1
-            elif (picture.getpixel((w+1,h+1)) == (0,0,0)) :
+            elif (picture.getpixel((w+1,h+1)) != (255,255,255)) :
                 last = 1
                 w = w+1
                 h = h+1
-            elif (picture.getpixel((w,h+1)) == (0,0,0)) :
+            elif (picture.getpixel((w,h+1)) != (255,255,255)) :
                 last = 2
                 h = h+1
-            elif (picture.getpixel((w-1,h+1)) == (0,0,0)) :
+            elif (picture.getpixel((w-1,h+1)) != (255,255,255)) :
                 last = 3
                 w = w-1
                 h = h+1
-            elif (picture.getpixel((w-1,h)) == (0,0,0)) :
+            elif (picture.getpixel((w-1,h)) != (255,255,255)) :
                 last = 4
                 w = w-1
-            elif (picture.getpixel((w-1,h-1)) == (0,0,0)) :
+            elif (picture.getpixel((w-1,h-1)) != (255,255,255)) :
                 last = 5
                 w = w-1
                 h = h-1
-            elif (picture.getpixel((w,h-1)) == (0,0,0)) :
+            elif (picture.getpixel((w,h-1)) != (255,255,255)) :
                 last = 6
                 h = h-1
         elif (last == 3) :
-            if (picture.getpixel((w+1,h)) == (0,0,0)) :
+            if (picture.getpixel((w+1,h)) != (255,255,255)) :
                 last = 0
                 w = w+1
-            elif (picture.getpixel((w+1,h+1)) == (0,0,0)) :
+            elif (picture.getpixel((w+1,h+1)) != (255,255,255)) :
                 last = 1
                 w = w+1
                 h = h+1
-            elif (picture.getpixel((w,h+1)) == (0,0,0)) :
+            elif (picture.getpixel((w,h+1)) != (255,255,255)) :
                 last = 2
                 h = h+1
-            elif (picture.getpixel((w-1,h+1)) == (0,0,0)) :
+            elif (picture.getpixel((w-1,h+1)) != (255,255,255)) :
                 last = 3
                 w = w-1
                 h = h+1
-            elif (picture.getpixel((w-1,h)) == (0,0,0)) :
+            elif (picture.getpixel((w-1,h)) != (255,255,255)) :
                 last = 4
                 w = w-1
-            elif (picture.getpixel((w-1,h-1)) == (0,0,0)) :
+            elif (picture.getpixel((w-1,h-1)) != (255,255,255)) :
                 last = 5
                 w = w-1
                 h = h-1
-            elif (picture.getpixel((w,h-1)) == (0,0,0)) :
+            elif (picture.getpixel((w,h-1)) != (255,255,255)) :
                 last = 6
                 h = h-1
-            elif (picture.getpixel((w+1,h-1)) == (0,0,0)) :
+            elif (picture.getpixel((w+1,h-1)) != (255,255,255)) :
                 last = 7
                 w = w+1
                 h = h-1
         elif (last == 4) :
-            if (picture.getpixel((w+1,h+1)) == (0,0,0)) :
+            if (picture.getpixel((w+1,h+1)) != (255,255,255)) :
                 last = 1
                 w = w+1
                 h = h+1
-            elif (picture.getpixel((w,h+1)) == (0,0,0)) :
+            elif (picture.getpixel((w,h+1)) != (255,255,255)) :
                 last = 2
                 h = h+1
-            elif (picture.getpixel((w-1,h+1)) == (0,0,0)) :
+            elif (picture.getpixel((w-1,h+1)) != (255,255,255)) :
                 last = 3
                 w = w-1
                 h = h+1
-            elif (picture.getpixel((w-1,h)) == (0,0,0)) :
+            elif (picture.getpixel((w-1,h)) != (255,255,255)) :
                 last = 4
                 w = w-1
-            elif (picture.getpixel((w-1,h-1)) == (0,0,0)) :
+            elif (picture.getpixel((w-1,h-1)) != (255,255,255)) :
                 last = 5
                 w = w-1
                 h = h-1
-            elif (picture.getpixel((w,h-1)) == (0,0,0)) :
+            elif (picture.getpixel((w,h-1)) != (255,255,255)) :
                 last = 6
                 h = h-1
-            elif (picture.getpixel((w+1,h-1)) == (0,0,0)) :
+            elif (picture.getpixel((w+1,h-1)) != (255,255,255)) :
                 last = 7
                 w = w+1
                 h = h-1
-            elif (picture.getpixel((w+1,h)) == (0,0,0)) :
+            elif (picture.getpixel((w+1,h)) != (255,255,255)) :
                 last = 0
                 w = w+1
         elif (last == 5) :
-            if (picture.getpixel((w,h+1)) == (0,0,0)) :
+            if (picture.getpixel((w,h+1)) != (255,255,255)) :
                 last = 2
                 h = h+1
-            elif (picture.getpixel((w-1,h+1)) == (0,0,0)) :
+            elif (picture.getpixel((w-1,h+1)) != (255,255,255)) :
                 last = 3
                 w = w-1
                 h = h+1
-            elif (picture.getpixel((w-1,h)) == (0,0,0)) :
+            elif (picture.getpixel((w-1,h)) != (255,255,255)) :
                 last = 4
                 w = w-1
-            elif (picture.getpixel((w-1,h-1)) == (0,0,0)) :
+            elif (picture.getpixel((w-1,h-1)) != (255,255,255)) :
                 last = 5
                 w = w-1
                 h = h-1
-            elif (picture.getpixel((w,h-1)) == (0,0,0)) :
+            elif (picture.getpixel((w,h-1)) != (255,255,255)) :
                 last = 6
                 h = h-1
-            elif (picture.getpixel((w+1,h-1)) == (0,0,0)) :
+            elif (picture.getpixel((w+1,h-1)) != (255,255,255)) :
                 last = 7
                 w = w+1
                 h = h-1
-            elif (picture.getpixel((w+1,h)) == (0,0,0)) :
+            elif (picture.getpixel((w+1,h)) != (255,255,255)) :
                 last = 0
                 w = w+1
-            elif (picture.getpixel((w+1,h+1)) == (0,0,0)) :
+            elif (picture.getpixel((w+1,h+1)) != (255,255,255)) :
                 last = 1
                 w = w+1
                 h = h+1
         elif (last == 6) :
-            if (picture.getpixel((w-1,h+1)) == (0,0,0)) :
+            if (picture.getpixel((w-1,h+1)) != (255,255,255)) :
                 last = 3
                 w = w-1
                 h = h+1
-            elif (picture.getpixel((w-1,h)) == (0,0,0)) :
+            elif (picture.getpixel((w-1,h)) != (255,255,255)) :
                 last = 4
                 w = w-1
-            elif (picture.getpixel((w-1,h-1)) == (0,0,0)) :
+            elif (picture.getpixel((w-1,h-1)) != (255,255,255)) :
                 last = 5
                 w = w-1
                 h = h-1
-            elif (picture.getpixel((w,h-1)) == (0,0,0)) :
+            elif (picture.getpixel((w,h-1)) != (255,255,255)) :
                 last = 6
                 h = h-1
-            elif (picture.getpixel((w+1,h-1)) == (0,0,0)) :
+            elif (picture.getpixel((w+1,h-1)) != (255,255,255)) :
                 last = 7
                 w = w+1
                 h = h-1
-            elif (picture.getpixel((w+1,h)) == (0,0,0)) :
+            elif (picture.getpixel((w+1,h)) != (255,255,255)) :
                 last = 0
                 w = w+1
-            elif (picture.getpixel((w+1,h+1)) == (0,0,0)) :
+            elif (picture.getpixel((w+1,h+1)) != (255,255,255)) :
                 last = 1
                 w = w+1
                 h = h+1
-            elif (picture.getpixel((w,h+1)) == (0,0,0)) :
+            elif (picture.getpixel((w,h+1)) != (255,255,255)) :
                 last = 2
                 h = h+1
         elif (last == 7) :
-            if (picture.getpixel((w-1,h)) == (0,0,0)) :
+            if (picture.getpixel((w-1,h)) != (255,255,255)) :
                 last = 4
                 w = w-1
-            elif (picture.getpixel((w-1,h-1)) == (0,0,0)) :
+            elif (picture.getpixel((w-1,h-1)) != (255,255,255)) :
                 last = 5
                 w = w-1
                 h = h-1
-            elif (picture.getpixel((w,h-1)) == (0,0,0)) :
+            elif (picture.getpixel((w,h-1)) != (255,255,255)) :
                 last = 6
                 h = h-1
-            elif (picture.getpixel((w+1,h-1)) == (0,0,0)) :
+            elif (picture.getpixel((w+1,h-1)) != (255,255,255)) :
                 last = 7
                 w = w+1
                 h = h-1
-            elif (picture.getpixel((w+1,h)) == (0,0,0)) :
+            elif (picture.getpixel((w+1,h)) != (255,255,255)) :
                 last = 0
                 w = w+1
-            elif (picture.getpixel((w+1,h+1)) == (0,0,0)) :
+            elif (picture.getpixel((w+1,h+1)) != (255,255,255)) :
                 last = 1
                 w = w+1
                 h = h+1
-            elif (picture.getpixel((w,h+1)) == (0,0,0)) :
+            elif (picture.getpixel((w,h+1)) != (255,255,255)) :
                 last = 2
                 h = h+1
-            elif (picture.getpixel((w-1,h+1)) == (0,0,0)) :
+            elif (picture.getpixel((w-1,h+1)) != (255,255,255)) :
                 last = 3
                 w = w-1
                 h = h+1
@@ -279,34 +279,33 @@ def picture2word(picture) :
         #print("pixel étudié : ",w," , ",h)
         
     cleaned_picture = clean_picture(picture,w_save,h_save)
-    second_word = picture2word(cleaned_picture)
+    second_word = picture2word_(cleaned_picture)
         
     if (second_word != ""):
         word = word + "#" + second_word
         
     return(word)
 
-
 def clean_picture(picture,w,h) :
     picture.putpixel((w,h), (255,255,255))
         
-    if picture.getpixel((w+1,h)) == (0,0,0) :
+    if picture.getpixel((w+1,h)) != (255,255,255) :
         picture = clean_picture(picture, w+1, h)
-    if picture.getpixel((w+1,h+1)) == (0,0,0) :
+    if picture.getpixel((w+1,h+1)) != (255,255,255) :
         picture = clean_picture(picture, w+1, h+1)
-    if picture.getpixel((w+1,h-1)) == (0,0,0) :
+    if picture.getpixel((w+1,h-1)) != (255,255,255) :
         picture = clean_picture(picture, w+1, h-1)
         
-    if picture.getpixel((w-1,h)) == (0,0,0) :
+    if picture.getpixel((w-1,h)) != (255,255,255) :
         picture = clean_picture(picture, w-1, h)
-    if picture.getpixel((w-1,h+1)) == (0,0,0) :
+    if picture.getpixel((w-1,h+1)) != (255,255,255) :
         picture = clean_picture(picture, w-1, h+1)
-    if picture.getpixel((w-1,h-1)) == (0,0,0) :
+    if picture.getpixel((w-1,h-1)) != (255,255,255) :
         picture = clean_picture(picture, w-1, h-1)
         
-    if picture.getpixel((w,h+1)) == (0,0,0) :
+    if picture.getpixel((w,h+1)) != (255,255,255) :
         picture = clean_picture(picture, w, h+1)
-    if picture.getpixel((w,h-1)) == (0,0,0) :
+    if picture.getpixel((w,h-1)) != (255,255,255) :
         picture = clean_picture(picture, w, h-1)
         
     return picture
@@ -318,6 +317,7 @@ def reduce(word,size) :
     lenght = len(word)
     while i < lenght :
         c = word[i] if i != lenght else "z"
+
         if (c == '0') :
             L.append(['0',1])
             i+=1
@@ -382,13 +382,26 @@ def reduce(word,size) :
                 L[-1][1] += 1
                 i+=1
                 c = word[i] if i != lenght else "z"
+        elif (c == '#') :
+            L.append(['#',1])
+            i += 1
+            c = word[i] if i != lenght else "z"
         
     coef = lenght/size
     for c in L :
-        ret += c[0]*round(c[1]/coef)
+        if c[0] != "#" :
+            ret += c[0]*round(c[1]/coef)
+        else :
+            ret += c[0]
     return ret
 
-def picture2word_(file) : 
+def picture2word(file) : 
     size = 100
-    return reduce(picture2word(file),size)
+    return reduce(picture2word_(file),size)
 
+
+def picture2word_multi(file,label) :
+    return (picture2word(file),label)
+
+def picture2word_multi_(file,label) :
+    return (picture2word_(file),label)

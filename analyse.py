@@ -8,9 +8,8 @@ Created on Tue Nov  7 13:54:42 2017
 
 import random
 from multiprocessing import Pool, cpu_count, Process, Manager
-from distanceC import distance
+from distanceC import distance, distance_multi
 from editdistance import eval as editdistance
-
 
 def analyse(word,base,label) :
     label_mini = -1
@@ -35,16 +34,20 @@ def analyse_multi(word,base,label,k=1) :
         
     pool = Pool()
     
-    all_distance = pool.starmap_async(distance, zip(base,[word]*len(base))).get()
-
-    all_distance = dict(zip(label, all_distance))
+    all_distance = pool.starmap_async(distance_multi, zip(base,[word]*len(base),label)).get()
     
-    all_distance = sorted(label, key=all_distance.__getitem__)
+    pool.close()
+
+#    all_distance = dict(zip(label, all_distance))
+#    
+#    all_distance = sorted(label, key=all_distance.__getitem__)
+
+    all_distance = sorted(all_distance, key=lambda tup: tup[1])
     
     votes = [0]*10
     
     for i in range(k):
-        votes[all_distance[i]] +=1
+        votes[all_distance[i][0]] +=1
                 
     return votes.index(max(votes))
     
@@ -98,25 +101,49 @@ def analyse_triangle(word,base,label,distance_matrix) :
     else :
         return label[w2]
     
-def analyse_triangle_knn_multi(word,base,label,distance_matrix,k) :
-    q = Manager().Queue()
     
+
+def analyse_triangle_knn_multi(word,base,label,distance_matrix,k) :
+#    q = Manager().Queue()
+#    
+#    cpu = cpu_count()
+#    
+#    p_list = []
+#    
+#    for i in range(cpu) :        
+#        p = Process(target=analyse_triangle_knn_queue, args=(word,base,label,distance_matrix,k,q))
+#        p.start()
+#        p_list.append(p)
+#        
+#    result = q.get()
+#    
+#    for p in p_list :
+#        p.terminate()
+
+#    cpu = cpu_count()
+#        
+#    pool = Pool()
+#    
+#    result = pool.starmap_async(analyse_triangle_knn, [(word,base,label,distance_matrix,k)]*cpu).get()
+#    
+#    pool.close()
+
     cpu = cpu_count()
     
-    p_list = []
+    pool = Pool()
     
-    for i in range(cpu) :        
-        p = Process(target=analyse_triangle_knn_queue, args=(word,base,label,distance_matrix,k,q))
-        p.start()
-        p_list.append(p)
+    results = []
+    
+    for i in range(cpu):
+        result = pool.apply_async(analyse_triangle_knn, (word,base,label,distance_matrix,k))
+        results.append(result)
         
-    result = q.get()
-    
-    for p in p_list :
-        p.terminate()
+    while True :
+        for result in results :
+            if result.ready() :
+                pool.terminate()
+                return result.get()
         
-    return result
-    
     
 
     
@@ -192,6 +219,7 @@ def analyse_triangle_knn_queue(word,base,label,distance_matrix,k,q) :
                 
     q.put(votes.index(max(votes)))
 
+    
 def analyse_triangle_knn(word,base,label,distance_matrix,k) :
     if len(base) == 0 :
         return -1
@@ -222,7 +250,6 @@ def analyse_triangle_knn(word,base,label,distance_matrix,k) :
     while pool != [] :
         
         sorted_keys = sorted(w_list)
-        print(len(pool))
         
         maxi1 = sorted_keys[-1]
         maxi2 = sorted_keys[-2]
@@ -264,6 +291,7 @@ def analyse_triangle_knn(word,base,label,distance_matrix,k) :
         votes[label[w_list[w]]] +=1
                 
     return votes.index(max(votes))
+    
 
 
 #==============================================================================
