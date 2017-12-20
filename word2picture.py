@@ -10,11 +10,11 @@ from PIL import Image
 def word2picture(word) :
     """fonction affichant le contour correpondant au mot entré en paramètre"""
     #création de l'image destination
-    picture = Image.new("RGB",(200,105))
+    picture = Image.new("RGB",(100,100))
     
     #position de départ du tracer
-    w = 100
-    h = 5
+    w = 50
+    h = 10
     
     #tracer pixels par pixels
     p = (255,0,0)
@@ -43,6 +43,5 @@ def word2picture(word) :
             h = h-1
         
         picture.putpixel((w,h),p)
-    picture.show()
-    #picture.save("test.png")
-    return picture
+    #picture.show()
+    picture.save(word+".png")
