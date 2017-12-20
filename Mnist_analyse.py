@@ -6,7 +6,7 @@ Created on Tue Nov 14 20:37:41 2017
 @author: koolok
 """
 
-from picture2word import picture2word
+from picture2word import picture2word, picture2word_multi
 import numpy as np
 import pickle 
 from editdistance import eval as editdistance
@@ -33,12 +33,20 @@ def init_base() :
     else :
         
         train_images, train_labels, test_images, test_labels = Mnist.load_mnist()
-        
-        base = []
+                
+#        for image in train_images :
+#            base.append(picture2word(image))
         
         pool = Pool()
         
-        base = pool.map_async(picture2word, train_images).get()
+        results = pool.starmap_async(picture2word_multi, zip(train_images,train_labels)).get()
+        
+        pool.close()
+        
+        results = list(zip(*results))
+        
+        base = results[0]
+        train_labels = results[1]
         
         file = open('base_mnist.pk', 'wb') 
     
@@ -304,7 +312,8 @@ def test_distance (training_set_size=1000, test_set_size=100):
     for i in range(len(sub_test_base)) :
         word = sub_test_base[i]
         
-        digit = analyse.analyse_triangle_knn_multi(word,base,label,distance_matrix,k=3)
+#        digit = analyse.analyse_triangle_knn_multi(word,base,label,distance_matrix,k=3)
+        digit = analyse.analyse_multi(word,base,label,k=3)
                 
         if (digit != sub_test_labels[i]) :
             miss_classified += 1
