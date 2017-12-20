@@ -6,10 +6,13 @@ Created on Tue Nov 14 19:51:32 2017
 @author: koolok
 """
 
-def picture2word_(picture) :
+
+def picture2word_(picture_original) :
     """fonction retournant le mot correspondant au pictogramme noir tracé dans
     le fichier entrer en paramètre"""
-
+    
+    picture = picture_original.copy()
+    
     #picture.show()
     #récupération des dimensions de l'image
     width,height = picture.size
