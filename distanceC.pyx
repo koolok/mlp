@@ -127,6 +127,11 @@ cpdef distance_multi_GUI(str seq1, str seq2, int label, int max_dist=-1):
     if seq1 == seq2:
         return 0
     sv_seq1 = seq1
+    
+    if (len(seq1) > len(seq2)) :
+        seq1 = reduce(seq1,len(seq2))
+    else :
+        seq2 = reduce(seq2,len(seq1))
 #
 #    cdef char *seq1
 #    cdef char *seq2
@@ -178,3 +183,90 @@ cpdef distance_multi_GUI(str seq1, str seq2, int label, int max_dist=-1):
     if max_dist >= 0 and column[len2] > max_dist:
         return -1
     return (label,column[len2],sv_seq1)
+
+
+
+cpdef reduce(str word, int size) :
+    cdef str ret = ""
+    L = []
+    cdef int i = 0
+    cdef int lenght = len(word)
+    while i < lenght :
+        c = word[i] if i != lenght else "z"
+
+        if (c == '0') :
+            L.append(['0',1])
+            i+=1
+            c = word[i] if i != lenght else "z"
+            while c == '0' :
+                L[-1][1] += 1
+                i+=1
+                c = word[i] if i != lenght else "z"
+        elif (c == '1') :
+            L.append(['1',1])
+            i+=1
+            c = word[i] if i != lenght else "z"
+            while c == '1' :
+                L[-1][1] += 1
+                i+=1
+                c = word[i] if i != lenght else "z"
+        elif (c == '2') :
+            L.append(['2',1])
+            i+=1
+            c = word[i] if i != lenght else "z"
+            while c == '2' :
+                L[-1][1] += 1
+                i+=1
+                c = word[i] if i != lenght else "z"
+        elif (c == '3') :
+            L.append(['3',1])
+            i+=1
+            c = word[i] if i != lenght else "z"
+            while c == '3' :
+                L[-1][1] += 1
+                i+=1
+                c = word[i] if i != lenght else "z"
+        elif (c == '4') :
+            L.append(['4',1])
+            i+=1
+            c = word[i] if i != lenght else "z"
+            while c == '4' :
+                L[-1][1] += 1
+                i+=1
+                c = word[i] if i != lenght else "z"
+        elif (c == '5') :
+            L.append(['5',1])
+            i+=1
+            c = word[i] if i != lenght else "z"
+            while c == '5' :
+                L[-1][1] += 1
+                i+=1
+                c = word[i] if i != lenght else "z"
+        elif (c == '6') :
+            L.append(['6',1])
+            i+=1
+            c = word[i] if i != lenght else "z"
+            while c == '6' :
+                L[-1][1] += 1
+                i+=1
+                c = word[i] if i != lenght else "z"
+        elif (c == '7') :
+            L.append(['7',1])
+            i+=1
+            c = word[i] if i != lenght else "z"
+            while c == '7' :
+                L[-1][1] += 1
+                i+=1
+                c = word[i] if i != lenght else "z"
+        elif (c == '#') :
+            L.append(['#',1])
+            i += 1
+            c = word[i] if i != lenght else "z"
+        
+    cdef int coef = lenght/size
+    for c in L :
+        if c[0] != "#" :
+            ret += c[0]*round(c[1]/coef)
+        else :
+            ret += c[0]
+    return ret
