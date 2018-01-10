@@ -33,5 +33,7 @@ def analyse_multi(word,base,label,k=1) :
     for i in range(k):
         votes[all_distance[i][0]] +=1
         Nearest.append(all_distance[i][2])
-                
+    
+    if max(votes) == 1 :
+        return word, all_distance[0][0], Nearest
     return word, votes.index(max(votes)), Nearest

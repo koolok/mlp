@@ -35,7 +35,7 @@ def predict() :
     if len(base) >= 3 :
         canvas1.postscript(file = 'save.ps', colormode='color')
         picture = Image.open('save.ps')
-        word,prediction,liste = analyse_multi(picture2word(picture),base,label,3)
+        word,prediction,liste = analyse_multi(picture2word_(picture),base,label,3)
         os.remove('save.ps')
         word2picture(word)
         file = word+".png"
@@ -44,7 +44,7 @@ def predict() :
         canvas5.image = img
         os.remove(file)
         text.set(str(prediction))
-        for i,can in enumerate([canvas4,canvas3,canvas2]) :
+        for i,can in enumerate([canvas2,canvas3,canvas4]) :
             word2picture(liste[i])
             file = liste[i]+".png"
             img = ImageTk.PhotoImage(file = file)
@@ -187,7 +187,7 @@ def init(database, training_set_size) :
             file_labels = open('base_mnist_labels_'+str(training_set_size)+'.pk', 'rb')
             label = pk.load(file_labels)
             file_labels.close()
-            print('base mnist loaded')
+            print('base mnist loaded',len(base),len(label))
         except :
             print("Error in base loading : mnist")
             base = []
@@ -210,7 +210,7 @@ def init(database, training_set_size) :
             file_labels = open('ourlabel.pk', 'rb')
             label = pk.load(file_labels)
             file_labels.close()
-            print('our base loaded')
+            print('our base loaded',len(base),len(label))
         except :
             print("Error in base loading : our")
             base = []
@@ -233,7 +233,7 @@ def init(database, training_set_size) :
             file_labels = open('base_mnist_labels_'+str(training_set_size)+'_custom.pk', 'rb')
             label = pk.load(file_labels)
             file_labels.close()
-            print('base mnist custom loaded')
+            print('base mnist custom loaded',len(base),len(label))
         except :
             print("Error in base loading : mnist custom")
             base = []
@@ -251,7 +251,7 @@ def init(database, training_set_size) :
         base = []
         label = []
         distance_matrix = np.zeros((len(base),len(base)))
-        print('new base loaded')
+        print('new base loaded',len(base),len(label))
 
         return base, label, distance_matrix
     else :
