@@ -8,8 +8,9 @@ Created on Tue Nov  7 13:54:42 2017
 
 import random
 from multiprocessing import Pool, cpu_count, Process, Manager
-from distanceC import distance, distance_multi
+from distanceC import distance, distance_multi, distance_multi_compress
 from editdistance import eval as editdistance
+from editdistancemulti import edidistance_multi, edidistance_multi_compress
 
 def analyse(word,base,label) :
     label_mini = -1
@@ -321,16 +322,41 @@ def edit_analyse_multi(word,base,label,k=1) :
         
     pool = Pool()
     
-    all_distance = pool.starmap_async(distance, zip(base,[word]*len(base))).get()
-
-    all_distance = dict(zip(label, all_distance))
+    all_distance = pool.starmap_async(edidistance_multi, zip(base,[word]*len(base),label)).get()
     
-    all_distance = sorted(label, key=all_distance.__getitem__)
+    pool.close()
+
+#    all_distance = dict(zip(label, all_distance))
+#    
+#    all_distance = sorted(label, key=all_distance.__getitem__)
+
+    all_distance = sorted(all_distance, key=lambda tup: tup[1])
     
     votes = [0]*10
     
     for i in range(k):
-        votes[all_distance[i]] +=1
+        votes[all_distance[i][0]] +=1
+                
+    return votes.index(max(votes))
+
+def edit_analyse_multi_compress(word,base,label,k=1) :
+    if len(base) == 0 :
+        return -1
+    if len(base) == 1 :
+        return label[0]
+        
+    pool = Pool()
+    
+    all_distance = pool.starmap_async(edidistance_multi_compress, zip(base,[word]*len(base),label)).get()
+    
+    pool.close()
+
+    all_distance = sorted(all_distance, key=lambda tup: tup[1])
+    
+    votes = [0]*10
+    
+    for i in range(k):
+        votes[all_distance[i][0]] +=1
                 
     return votes.index(max(votes))
     
