@@ -28,12 +28,12 @@ def mouseMove(event) :
     xn,yn = event.x, event.y
     if xn > 97:
         xn = 97;
-    elif xn < 3 :
+    elif xn < 1 :
         xn = 3;
     if yn > 97:
-        yn = 97;
+        yn = 99;
     elif yn < 3 :
-        yn = 3;
+        yn = 1;
     canvas1.create_line(xc,yc,xn,yn,width = 3,smooth = 1)
     canvas1.create_rectangle(xn-1,yn-1,xn+1,yn+1,fill='black')
     xc,yc = xn,yn
