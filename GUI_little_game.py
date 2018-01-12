@@ -18,50 +18,100 @@ import pickle as pk
 import os
 
 training_set_size = 6000
+rand_num = 42
 
-def mouseDown(event) :
+def mouseDown1a(event) :
     global xc,yc
     xc,yc = event.x, event.y
 
-def mouseMove(event) :
+def mouseMove1a(event) :
     global xc,yc
     xn,yn = event.x, event.y
     if xn > 97:
         xn = 97;
-    elif xn < 1 :
+    elif xn < 3 :
         xn = 3;
     if yn > 97:
-        yn = 99;
+        yn = 97;
     elif yn < 3 :
-        yn = 1;
-    canvas1.create_line(xc,yc,xn,yn,width = 3,smooth = 1)
-    canvas1.create_rectangle(xn-1,yn-1,xn+1,yn+1,fill='black')
+        yn = 3;
+    canvas1a.create_line(xc,yc,xn,yn,width = 3,smooth = 1)
+    canvas1a.create_rectangle(xn-1,yn-1,xn+1,yn+1,fill='black')
     xc,yc = xn,yn
 
+def mouseDown1b(event) :
+    global xc,yc
+    xc,yc = event.x, event.y
+
+def mouseMove1b(event) :
+    global xc,yc
+    xn,yn = event.x, event.y
+    if xn > 97:
+        xn = 97;
+    elif xn < 3 :
+        xn = 3;
+    if yn > 97:
+        yn = 97;
+    elif yn < 3 :
+        yn = 3;
+    canvas1b.create_line(xc,yc,xn,yn,width = 3,smooth = 1)
+    canvas1b.create_rectangle(xn-1,yn-1,xn+1,yn+1,fill='black')
+    xc,yc = xn,yn
+
+
+
 def predict() :
-    global canvas1,text
+    global canvas1a,canvas1b,text
     if len(base) >= 3 :
-        canvas1.postscript(file = 'save.ps', colormode='color')
-        picture = Image.open('save.ps')
-        word,prediction,liste = analyse_multi(picture2word_(picture),base,label,3)
-        os.remove('save.ps')
-        word2picture(word)
-        file = word+".png"
-        img = ImageTk.PhotoImage(file = file)
-        canvas5.create_image(50, 50, image=img)
-        canvas5.image = img
-        os.remove(file)
-        text.set(str(prediction))
-        for i,can in enumerate([canvas2,canvas3,canvas4]) :
-            word2picture(liste[i])
-            file = liste[i]+".png"
-            img = ImageTk.PhotoImage(file = file)
-            can.create_image(50, 50, image=img)
-            can.image = img
-            os.remove(file)
+        canvas1a.postscript(file = 'save1a.ps', colormode='color')
+        canvas1b.postscript(file = 'save1b.ps', colormode='color')
+        picture1a = Image.open('save1a.ps')
+        picture1b = Image.open('save1b.ps')
+        word1a,prediction1a,liste1a = analyse_multi(picture2word_(picture1a),base,label,3)
+        word1b,prediction1b,liste1b = analyse_multi(picture2word_(picture1b),base,label,3)
+        
+        os.remove('save1a.ps')
+        os.remove('save1b.ps')
+#        word2picture(word1a)
+#        file1a = word1a+".png"
+#        img1a = ImageTk.PhotoImage(file = file1a)
+        
+#        word2picture(word1b)
+        
+#        file1b = word1b+".png"
+#        img1b = ImageTk.PhotoImage(file = file1b)
+#        canvas5.create_image(50, 50, image=img1b)
+#        canvas5.image = img
+#        os.remove(file)
+#        text.set(str(prediction1a)+str(prediction1b))
+        
+        # first digit
+#        word2picture(liste1a[0])
+        file1a = str(prediction1a)+".png"
+        img1a = ImageTk.PhotoImage(file = file1a)
+        canvas2.create_image(50,50,image=img1a)
+#        os.remove(file1a)
+        
+        # second digit
+#        word2picture(liste1b[0])
+        file1b = str(prediction1b)+".png"
+        img1b = ImageTk.PhotoImage(file = file1b)
+        canvas3.create_image(50,50,image=img1b)
+#        os.remove(file1b)
+        
+        number = 10 * prediction1a + prediction1b
+        if number == rand_num:
+            text.set('you found it!')
+        elif number < rand_num:
+            text.set('it\'s bigger!')
+        elif number > rand_num:
+            text.set('it\'s smaller!')
+        
+        canvas1a.delete("all")
+        canvas1b.delete("all")
 
 def erase() :
-    for can in [canvas1,canvas2,canvas3,canvas4,canvas5] :
+    for can in [canvas1a,canvas1b,canvas2,canvas3] :
         can.delete("all")
     text.set("")
 
@@ -103,89 +153,90 @@ def save() :
         file.close()
         print("mnist base custom saved")
 
-def correct() :
-    global toplevel
-    toplevel = Toplevel()
-    toplevel.title("Selection")
-    v = IntVar() 
-    b0 = Radiobutton(toplevel, text="0", variable=v, value=0)
-    b1 = Radiobutton(toplevel, text="1", variable=v, value=1)
-    b2 = Radiobutton(toplevel, text="2", variable=v, value=2)
-    b3 = Radiobutton(toplevel, text="3", variable=v, value=3)
-    b4 = Radiobutton(toplevel, text="4", variable=v, value=4)
-    b5 = Radiobutton(toplevel, text="5", variable=v, value=5)
-    b6 = Radiobutton(toplevel, text="6", variable=v, value=6)
-    b7 = Radiobutton(toplevel, text="7", variable=v, value=7)
-    b8 = Radiobutton(toplevel, text="8", variable=v, value=8)
-    b9 = Radiobutton(toplevel, text="9", variable=v, value=9)
-    b0.pack()
-    b1.pack()
-    b2.pack()
-    b3.pack()
-    b4.pack()
-    b5.pack()
-    b6.pack()
-    b7.pack()
-    b8.pack()
-    b9.pack()
-    button4 = Button(toplevel, text="Validate", command=lambda x=v : validate_correct(x))
-    button4.pack(side=RIGHT, padx=30, pady=30)
+#def correct() :
+#    global toplevel
+#    toplevel = Toplevel()
+#    toplevel.title("Selection")
+#    v = IntVar() 
+##    b0 = Radiobutton(toplevel, text="0", variable=v, value=0)
+##    b1 = Radiobutton(toplevel, text="1", variable=v, value=1)
+##    b2 = Radiobutton(toplevel, text="2", variable=v, value=2)
+##    b3 = Radiobutton(toplevel, text="3", variable=v, value=3)
+##    b4 = Radiobutton(toplevel, text="4", variable=v, value=4)
+##    b5 = Radiobutton(toplevel, text="5", variable=v, value=5)
+##    b6 = Radiobutton(toplevel, text="6", variable=v, value=6)
+##    b7 = Radiobutton(toplevel, text="7", variable=v, value=7)
+##    b8 = Radiobutton(toplevel, text="8", variable=v, value=8)
+##    b9 = Radiobutton(toplevel, text="9", variable=v, value=9)
+##    b0.pack()
+##    b1.pack()
+##    b2.pack()
+##    b3.pack()
+##    b4.pack()
+##    b5.pack()
+##    b6.pack()
+##    b7.pack()
+##    b8.pack()
+##    b9.pack()
+#    button4 = Button(toplevel, text="Validate", command=lambda x=v : validate_correct(x))
+#    button4.pack(side=RIGHT, padx=30, pady=30)
 
-def add() :
-    global toplevel2
-    toplevel2 = Toplevel()
-    toplevel2.title("Selection")
-    v2 = IntVar() 
-    b0 = Radiobutton(toplevel2, text="0", variable=v2, value=0)
-    b1 = Radiobutton(toplevel2, text="1", variable=v2, value=1)
-    b2 = Radiobutton(toplevel2, text="2", variable=v2, value=2)
-    b3 = Radiobutton(toplevel2, text="3", variable=v2, value=3)
-    b4 = Radiobutton(toplevel2, text="4", variable=v2, value=4)
-    b5 = Radiobutton(toplevel2, text="5", variable=v2, value=5)
-    b6 = Radiobutton(toplevel2, text="6", variable=v2, value=6)
-    b7 = Radiobutton(toplevel2, text="7", variable=v2, value=7)
-    b8 = Radiobutton(toplevel2, text="8", variable=v2, value=8)
-    b9 = Radiobutton(toplevel2, text="9", variable=v2, value=9)
-    b0.pack()
-    b1.pack()
-    b2.pack()
-    b3.pack()
-    b4.pack()
-    b5.pack()
-    b6.pack()
-    b7.pack()
-    b8.pack()
-    b9.pack()
-    button6 = Button(toplevel2, text="Validate", command=lambda x=v2 : validate_add(x))
-    button6.pack(side=RIGHT, padx=30, pady=30)
+#def add() :
+#    global toplevel2
+#    toplevel2 = Toplevel()
+#    toplevel2.title("Selection")
+#    v2 = IntVar() 
+##    b0 = Radiobutton(toplevel2, text="0", variable=v2, value=0)
+##    b1 = Radiobutton(toplevel2, text="1", variable=v2, value=1)
+##    b2 = Radiobutton(toplevel2, text="2", variable=v2, value=2)
+##    b3 = Radiobutton(toplevel2, text="3", variable=v2, value=3)
+##    b4 = Radiobutton(toplevel2, text="4", variable=v2, value=4)
+##    b5 = Radiobutton(toplevel2, text="5", variable=v2, value=5)
+##    b6 = Radiobutton(toplevel2, text="6", variable=v2, value=6)
+##    b7 = Radiobutton(toplevel2, text="7", variable=v2, value=7)
+##    b8 = Radiobutton(toplevel2, text="8", variable=v2, value=8)
+##    b9 = Radiobutton(toplevel2, text="9", variable=v2, value=9)
+##    b0.pack()
+##    b1.pack()
+##    b2.pack()
+##    b3.pack()
+##    b4.pack()
+##    b5.pack()
+##    b6.pack()
+##    b7.pack()
+##    b8.pack()
+##    b9.pack()
+#    button6 = Button(toplevel2, text="Validate", command=lambda x=v2 : validate_add(x))
+#    button6.pack(side=RIGHT, padx=30, pady=30)
 
-def validate_add(x) :
-    global toplevel2
-    canvas1.postscript(file = 'save.ps', colormode='color')
-    picture = Image.open('save.ps')
-    word = picture2word_(picture)
-    os.remove('save.ps')
-    base.append(word)
-    label.append(x.get())
-    erase()
-    toplevel2.destroy()
-
-def validate_correct(x) :
-    global toplevel
-    canvas1.postscript(file = 'save.ps', colormode='color')
-    picture = Image.open('save.ps')
-    word = picture2word_(picture)
-    os.remove('save.ps')
-    base.append(word)
-    label.append(x.get())
-    erase()
-    toplevel.destroy()
+#def validate_add(x) :
+#    global toplevel2
+#    canvas1.postscript(file = 'save.ps', colormode='color')
+#    picture = Image.open('save.ps')
+#    word = picture2word_(picture)
+#    os.remove('save.ps')
+#    base.append(word)
+#    label.append(x.get())
+#    erase()
+#    toplevel2.destroy()
+#
+#def validate_correct(x) :
+#    global toplevel
+#    canvas1.postscript(file = 'save.ps', colormode='color')
+#    picture = Image.open('save.ps')
+#    word = picture2word_(picture)
+#    os.remove('save.ps')
+#    base.append(word)
+#    label.append(x.get())
+#    erase()
+#    toplevel.destroy()
 
 def validate_database(x) :
     global base, label, distance_matrix
     base, label, distance_matrix = init(x.get(), training_set_size)
 
 def init(database, training_set_size) :
+    text.set('try a number!')
     if database == 0 :
         try :
             file_base = open('base_mnist_'+str(training_set_size)+'.pk', 'rb')
@@ -300,42 +351,49 @@ button5 = Button(frame0, text="Validate", command=lambda x=database : validate_d
 button5.pack(side=RIGHT, padx=30, pady=30)
 
 # canvas 1 in frame 1
-canvas1 = Canvas(frame1, width=100, height=100, background='white')
-canvas1.bind("<Button-1>", mouseDown)
-canvas1.bind("<B1-Motion>", mouseMove)
-canvas1.pack(side=LEFT, padx=30, pady=30)
+canvas1a = Canvas(frame1, width=100, height=100, background='white')
+canvas1a.bind("<Button-1>", mouseDown1a)
+canvas1a.bind("<B1-Motion>", mouseMove1a)
+canvas1a.pack(side=LEFT, padx=30, pady=30)
+
+canvas1b = Canvas(frame1, width=100, height=100, background='white')
+canvas1b.bind("<Button-1>", mouseDown1b)
+canvas1b.bind("<B1-Motion>", mouseMove1b)
+canvas1b.pack(side=LEFT, padx=30, pady=30)
+
+
 
 # buttons in frame 1
 button7 = Button(frame1, text="Save", command=save)
 button7.pack(side=RIGHT, padx=30, pady=30)
 
-button3 = Button(frame1, text="Add", command=add)
-button3.pack(side=RIGHT, padx=30, pady=30)
+#button3 = Button(frame1, text="Add", command=add)
+#button3.pack(side=RIGHT, padx=30, pady=30)
+#
+#button2 = Button(frame1, text="Correct", command=correct)
+#button2.pack(side=RIGHT, padx=30, pady=30)
 
-button2 = Button(frame1, text="Correct", command=correct)
-button2.pack(side=RIGHT, padx=30, pady=30)
-
-button1 = Button(frame1, text="Predict", command=predict)
+button1 = Button(frame1, text="Try", command=predict)
 button1.pack(side=RIGHT, padx=30, pady=30)
 
 button0 = Button(frame1, text="Erase", command=erase)
 button0.pack(side=RIGHT, padx=30, pady=30)
 
 # canvas 5 in frame 2
-canvas5 = Canvas(frame2, width=100, height=100, background='black')
-canvas5.pack(side=LEFT, padx=30, pady=30)
+#canvas5 = Canvas(frame2, width=100, height=100, background='black')
+#canvas5.pack(side=LEFT, padx=30, pady=30)
 
-# canvas 2 in frame 2
+# first digit
 canvas2 = Canvas(frame2, width=100, height=100, background='black')
 canvas2.pack(side=LEFT, padx=30, pady=30)
 
-# canvas 3 in frame 2
+# second digit
 canvas3 = Canvas(frame2, width=100, height=100, background='black')
 canvas3.pack(side=LEFT, padx=30, pady=30)
 
 # canvas 4 in frame 2
-canvas4 = Canvas(frame2, width=100, height=100, background='black')
-canvas4.pack(side=LEFT, padx=30, pady=30)
+#canvas4 = Canvas(frame2, width=100, height=100, background='black')
+#canvas4.pack(side=LEFT, padx=30, pady=30)
 
 # frame 3 in frame 2
 frame3 = Frame(frame2, bg="white", borderwidth=2, relief=GROOVE, width=100, height=100)
