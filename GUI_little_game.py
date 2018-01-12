@@ -6,7 +6,7 @@ Created on Wed Nov 15 09:54:16 2017
 @author: remi
 """
 
-from tkinter import Radiobutton, Toplevel, IntVar, Button, Frame, Tk, Label, Canvas, StringVar
+from tkinter import Radiobutton, Toplevel, IntVar, Button, Frame, Tk, Label, Canvas, StringVar, StringVar, Entry
 from tkinter import RIGHT, LEFT, TOP, GROOVE, BOTTOM
 #from tkinter import *
 from picture2word import picture2word, picture2word_
@@ -19,9 +19,14 @@ import os
 
 training_set_size = 6000
 rand_num = 42
+corrected = -1
+number = 0
 
 def mouseDown1a(event) :
-    global xc,yc
+    global xc,yc,number
+    if number != 0:
+        number = 0
+        erase()
     xc,yc = event.x, event.y
 
 def mouseMove1a(event) :
@@ -61,175 +66,118 @@ def mouseMove1b(event) :
 
 
 def predict() :
-    global canvas1a,canvas1b,text
-    if len(base) >= 3 :
-        canvas1a.postscript(file = 'save1a.ps', colormode='color')
-        canvas1b.postscript(file = 'save1b.ps', colormode='color')
-        picture1a = Image.open('save1a.ps')
-        picture1b = Image.open('save1b.ps')
-        word1a,prediction1a,liste1a = analyse_multi(picture2word_(picture1a),base,label,3)
-        word1b,prediction1b,liste1b = analyse_multi(picture2word_(picture1b),base,label,3)
-        
-        os.remove('save1a.ps')
-        os.remove('save1b.ps')
-#        word2picture(word1a)
-#        file1a = word1a+".png"
-#        img1a = ImageTk.PhotoImage(file = file1a)
-        
-#        word2picture(word1b)
-        
-#        file1b = word1b+".png"
-#        img1b = ImageTk.PhotoImage(file = file1b)
-#        canvas5.create_image(50, 50, image=img1b)
-#        canvas5.image = img
-#        os.remove(file)
-#        text.set(str(prediction1a)+str(prediction1b))
-        
-        # first digit
-#        word2picture(liste1a[0])
-        file1a = str(prediction1a)+".png"
-        img1a = ImageTk.PhotoImage(file = file1a)
-        canvas2.create_image(50,50,image=img1a)
-#        os.remove(file1a)
-        
-        # second digit
-#        word2picture(liste1b[0])
-        file1b = str(prediction1b)+".png"
-        img1b = ImageTk.PhotoImage(file = file1b)
-        canvas3.create_image(50,50,image=img1b)
-#        os.remove(file1b)
-        
-        number = 10 * prediction1a + prediction1b
-        if number == rand_num:
-            text.set('you found it!')
-        elif number < rand_num:
-            text.set('it\'s bigger!')
-        elif number > rand_num:
-            text.set('it\'s smaller!')
-        
-        canvas1a.delete("all")
-        canvas1b.delete("all")
+    global corrected,canvas1a,canvas1b,text,number
+    print('CORRECTED = ',str(corrected))
+#    number = -1
+    if corrected >= 0:
+        number = corrected
+        corrected = -1
+    else:
+        if len(base) >= 3 :
+            canvas1a.postscript(file = 'save1a.ps', colormode='color')
+            canvas1b.postscript(file = 'save1b.ps', colormode='color')
+            picture1a = Image.open('save1a.ps')
+            picture1b = Image.open('save1b.ps')
+            word1a,prediction1a,liste1a = analyse_multi(picture2word_(picture1a),base,label,3)
+            word1b,prediction1b,liste1b = analyse_multi(picture2word_(picture1b),base,label,3)
+            
+            os.remove('save1a.ps')
+            os.remove('save1b.ps')
+    
+    
+            # first digit
+            file1a = str(prediction1a)+".png"
+            print('file1a='+str(file1a))
+            img1a = ImageTk.PhotoImage(file = file1a)
+            canvas2.create_image(50,50,image=img1a)
+            canvas2.image = img1a
+            
+            # second digit
+            file1b = str(prediction1b)+".png"
+            img1b = ImageTk.PhotoImage(file = file1b)
+            canvas3.create_image(50,50,image=img1b)
+            canvas3.image = img1b
+            
+            number = 10 * prediction1a + prediction1b
+            print('num=',str(number))
+            
+    if number == rand_num:
+        text.set('you found it!')
+    elif number < rand_num:
+        text.set('it\'s bigger!')
+    elif number > rand_num:
+        text.set('it\'s smaller!')
+    
+    canvas1a.delete("all")
+    canvas1b.delete("all")
 
 def erase() :
-    for can in [canvas1a,canvas1b,canvas2,canvas3] :
-        can.delete("all")
-    text.set("")
+    
+    canvas1a.delete("all")
+    canvas1b.delete("all")
+    
+    img1 = ImageTk.PhotoImage(file = "?.png")
+    canvas2.create_image(50,50,image=img1)
+    canvas2.image = img1
 
-def save() : 
-    if database.get() == 1 :
-        file = open('ourbase.pk', 'wb')
-        pk.dump(base, file) 
-        file.close()
+    canvas3.create_image(50,50,image=img1)
+    canvas3.image = img1
+    text.set("??")
 
-        file = open('ourlabel.pk', 'wb') 
-        pk.dump(label, file) 
-        file.close()
-        print("our base saved")
-    elif database.get() == 2 :
-        file = open('base_mnist_'+str(training_set_size)+'_custom.pk', 'wb') 
-        pk.dump(base, file) 
-        file.close()
 
-        file = open('base_mnist_labels_'+str(training_set_size)+'_custom.pk', 'wb') 
-        pk.dump(label, file) 
-        file.close()
-        print("mnist base custom saved")
-    elif database.get() == 3 :
-        file = open('ourbase.pk', 'wb') 
-        pk.dump(base, file) 
-        file.close()
-
-        file = open('ourlabel.pk', 'wb') 
-        pk.dump(label, file) 
-        file.close()
-        print("our base saved")
-    else :  
-        file = open('base_mnist_'+str(training_set_size)+'_custom.pk', 'wb') 
-        pk.dump(base, file) 
-        file.close()
-
-        file = open('base_mnist_labels_'+str(training_set_size)+'_custom.pk', 'wb') 
-        pk.dump(label, file) 
-        file.close()
-        print("mnist base custom saved")
-
-#def correct() :
-#    global toplevel
-#    toplevel = Toplevel()
-#    toplevel.title("Selection")
-#    v = IntVar() 
-##    b0 = Radiobutton(toplevel, text="0", variable=v, value=0)
-##    b1 = Radiobutton(toplevel, text="1", variable=v, value=1)
-##    b2 = Radiobutton(toplevel, text="2", variable=v, value=2)
-##    b3 = Radiobutton(toplevel, text="3", variable=v, value=3)
-##    b4 = Radiobutton(toplevel, text="4", variable=v, value=4)
-##    b5 = Radiobutton(toplevel, text="5", variable=v, value=5)
-##    b6 = Radiobutton(toplevel, text="6", variable=v, value=6)
-##    b7 = Radiobutton(toplevel, text="7", variable=v, value=7)
-##    b8 = Radiobutton(toplevel, text="8", variable=v, value=8)
-##    b9 = Radiobutton(toplevel, text="9", variable=v, value=9)
-##    b0.pack()
-##    b1.pack()
-##    b2.pack()
-##    b3.pack()
-##    b4.pack()
-##    b5.pack()
-##    b6.pack()
-##    b7.pack()
-##    b8.pack()
-##    b9.pack()
+def correct() :
+    global toplevel,number
+    toplevel = Toplevel()
+    toplevel.title("Correction")
+    
+    v = StringVar()
+    txt = Entry(toplevel,textvariable = v,bd=1,width=30)
+    txt.pack(side=TOP,padx=10,pady=10)
+    
+    v.set(str(number))
+    
+    button4 = Button(toplevel, text="Try this one", command=lambda x=v : validate_correct(x))
+    button4.pack(side=BOTTOM, padx=30, pady=30)
+    
+#    txt_wrong_var = "enter the new number"
+#    txt_wrong = Label(toplevel, text_variable=txt_wrong_var, bd="white")
+#    txt_wrong.pack()
+    
+    
 #    button4 = Button(toplevel, text="Validate", command=lambda x=v : validate_correct(x))
 #    button4.pack(side=RIGHT, padx=30, pady=30)
 
-#def add() :
-#    global toplevel2
-#    toplevel2 = Toplevel()
-#    toplevel2.title("Selection")
-#    v2 = IntVar() 
-##    b0 = Radiobutton(toplevel2, text="0", variable=v2, value=0)
-##    b1 = Radiobutton(toplevel2, text="1", variable=v2, value=1)
-##    b2 = Radiobutton(toplevel2, text="2", variable=v2, value=2)
-##    b3 = Radiobutton(toplevel2, text="3", variable=v2, value=3)
-##    b4 = Radiobutton(toplevel2, text="4", variable=v2, value=4)
-##    b5 = Radiobutton(toplevel2, text="5", variable=v2, value=5)
-##    b6 = Radiobutton(toplevel2, text="6", variable=v2, value=6)
-##    b7 = Radiobutton(toplevel2, text="7", variable=v2, value=7)
-##    b8 = Radiobutton(toplevel2, text="8", variable=v2, value=8)
-##    b9 = Radiobutton(toplevel2, text="9", variable=v2, value=9)
-##    b0.pack()
-##    b1.pack()
-##    b2.pack()
-##    b3.pack()
-##    b4.pack()
-##    b5.pack()
-##    b6.pack()
-##    b7.pack()
-##    b8.pack()
-##    b9.pack()
-#    button6 = Button(toplevel2, text="Validate", command=lambda x=v2 : validate_add(x))
-#    button6.pack(side=RIGHT, padx=30, pady=30)
+def validate_correct(x) :
+    global toplevel
+#    canvas1.postscript(file = 'save.ps', colormode='color')
+#    picture = Image.open('save.ps')
+#    word = picture2word_(picture)
+#    os.remove('save.ps')
+#    base.append(word)
+#    label.append(x.get())
+    d1str = x.get()
+    if len(d1str) != 2:
+#        txt_wrong = "ente a VALID
+        return
+    d1a = d1str[0]
+    d1b = d1str[1]
+    global corrected
+    corrected = 10 * int(d1a) + int(d1b)
+    
+#    print('--- DIGITS = ',str(d1a),str(d1b))
+    
+    erase()
 
-#def validate_add(x) :
-#    global toplevel2
-#    canvas1.postscript(file = 'save.ps', colormode='color')
-#    picture = Image.open('save.ps')
-#    word = picture2word_(picture)
-#    os.remove('save.ps')
-#    base.append(word)
-#    label.append(x.get())
-#    erase()
-#    toplevel2.destroy()
-#
-#def validate_correct(x) :
-#    global toplevel
-#    canvas1.postscript(file = 'save.ps', colormode='color')
-#    picture = Image.open('save.ps')
-#    word = picture2word_(picture)
-#    os.remove('save.ps')
-#    base.append(word)
-#    label.append(x.get())
-#    erase()
-#    toplevel.destroy()
+    img1 = ImageTk.PhotoImage(file = str(d1a)+".png")
+    canvas2.create_image(50,50,image=img1)
+    canvas2.image = img1
+    
+    img2 = ImageTk.PhotoImage(file = str(d1b)+".png")
+    canvas3.create_image(50,50,image=img2)
+    canvas3.image = img2
+    
+    toplevel.destroy()
+    predict()
 
 def validate_database(x) :
     global base, label, distance_matrix
@@ -237,6 +185,11 @@ def validate_database(x) :
 
 def init(database, training_set_size) :
     text.set('try a number!')
+    
+    erase()
+
+
+    
     if database == 0 :
         try :
             file_base = open('base_mnist_'+str(training_set_size)+'.pk', 'rb')
@@ -343,10 +296,10 @@ b_0 = Radiobutton(frame0, text="Mnist Database", variable=database, value=0, anc
 b_1 = Radiobutton(frame0, text="Our Database", variable=database, value=1, anchor='w')
 b_2 = Radiobutton(frame0, text="Mnist Custumized", variable=database, value=2, anchor='w')
 b_3 = Radiobutton(frame0, text="New Database", variable=database, value=3, anchor='w')
-b_0.pack()
-b_1.pack()
-b_2.pack()
-b_3.pack()
+b_0.pack(side=LEFT)
+b_1.pack(side=LEFT)
+b_2.pack(side=LEFT)
+b_3.pack(side=LEFT)
 button5 = Button(frame0, text="Validate", command=lambda x=database : validate_database(x))
 button5.pack(side=RIGHT, padx=30, pady=30)
 
@@ -364,20 +317,22 @@ canvas1b.pack(side=LEFT, padx=30, pady=30)
 
 
 # buttons in frame 1
-button7 = Button(frame1, text="Save", command=save)
-button7.pack(side=RIGHT, padx=30, pady=30)
+#button7 = Button(frame1, text="Save", command=save)
+#button7.pack(side=RIGHT, padx=30, pady=30)
 
 #button3 = Button(frame1, text="Add", command=add)
 #button3.pack(side=RIGHT, padx=30, pady=30)
 #
-#button2 = Button(frame1, text="Correct", command=correct)
-#button2.pack(side=RIGHT, padx=30, pady=30)
 
-button1 = Button(frame1, text="Try", command=predict)
-button1.pack(side=RIGHT, padx=30, pady=30)
 
 button0 = Button(frame1, text="Erase", command=erase)
-button0.pack(side=RIGHT, padx=30, pady=30)
+button0.pack(side=LEFT, padx=30, pady=30)
+
+button2 = Button(frame1, text="Correct", command=correct)
+button2.pack(side=LEFT, padx=30, pady=30)
+
+button1 = Button(frame1, text="Try", command=predict)
+button1.pack(side=LEFT, padx=30, pady=30)
 
 # canvas 5 in frame 2
 #canvas5 = Canvas(frame2, width=100, height=100, background='black')
@@ -403,6 +358,7 @@ text.set("")
 Label(frame3, textvariable = text,bg="white").pack(padx=10, pady=10)
 
 base, label, distance_matrix = init(database.get(), training_set_size)
+#frame1.pack()
 
 window.mainloop()
 
