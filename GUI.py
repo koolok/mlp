@@ -26,6 +26,14 @@ def mouseDown(event) :
 def mouseMove(event) :
     global xc,yc
     xn,yn = event.x, event.y
+    if xn > 97:
+        xn = 97;
+    elif xn < 3 :
+        xn = 3;
+    if yn > 97:
+        yn = 97;
+    elif yn < 3 :
+        yn = 3;
     canvas1.create_line(xc,yc,xn,yn,width = 3,smooth = 1)
     canvas1.create_rectangle(xn-1,yn-1,xn+1,yn+1,fill='black')
     xc,yc = xn,yn
@@ -318,15 +326,15 @@ canvas5 = Canvas(frame2, width=100, height=100, background='black')
 canvas5.pack(side=LEFT, padx=30, pady=30)
 
 # canvas 2 in frame 2
-canvas2 = Canvas(frame2, width=100, height=100, background='white')
+canvas2 = Canvas(frame2, width=100, height=100, background='black')
 canvas2.pack(side=LEFT, padx=30, pady=30)
 
 # canvas 3 in frame 2
-canvas3 = Canvas(frame2, width=100, height=100, background='white')
+canvas3 = Canvas(frame2, width=100, height=100, background='black')
 canvas3.pack(side=LEFT, padx=30, pady=30)
 
 # canvas 4 in frame 2
-canvas4 = Canvas(frame2, width=100, height=100, background='white')
+canvas4 = Canvas(frame2, width=100, height=100, background='black')
 canvas4.pack(side=LEFT, padx=30, pady=30)
 
 # frame 3 in frame 2
