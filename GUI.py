@@ -46,7 +46,7 @@ def predict() :
         word,prediction,liste = analyse_multi(picture2word_(picture),base,label,3)
         os.remove('save.ps')
         word2picture(word)
-        file = word+".png"
+        file = "temp.png"
         img = ImageTk.PhotoImage(file = file)
         canvas5.create_image(50, 50, image=img)
         canvas5.image = img
@@ -54,7 +54,7 @@ def predict() :
         text.set(str(prediction))
         for i,can in enumerate([canvas2,canvas3,canvas4]) :
             word2picture(liste[i])
-            file = liste[i]+".png"
+            file = "temp.png"
             img = ImageTk.PhotoImage(file = file)
             can.create_image(50, 50, image=img)
             can.image = img
