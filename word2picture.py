@@ -17,7 +17,7 @@ def word2picture(word) :
     h = 10
     
     #tracer pixels par pixels
-    p = (255,0,0)
+    p = (255,255,0)
     picture.putpixel((w,h),p)
     for i in range(len(word)) :
         c = word[i]
