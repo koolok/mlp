@@ -44,4 +44,4 @@ def word2picture(word) :
         
         picture.putpixel((w,h),p)
     #picture.show()
-    picture.save(word+".png")
+    picture.save("temp.png")
