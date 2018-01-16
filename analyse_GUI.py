@@ -7,7 +7,8 @@ Created on Tue Dec 19 13:32:28 2017
 """
 
 from multiprocessing import Pool
-from distanceC import distance_multi_GUI
+#from distanceC import distance_multi_GUI
+from editdistancemulti import edidistance_multi_compress_GUI
 
 def analyse_multi(word,base,label,k=1) :
     if len(base) == 0 :
@@ -17,7 +18,7 @@ def analyse_multi(word,base,label,k=1) :
         
     pool = Pool()
     
-    all_distance = pool.starmap_async(distance_multi_GUI, zip(base,[word]*len(base),label)).get()
+    all_distance = pool.starmap_async(edidistance_multi_compress_GUI, zip(base,[word]*len(base),label)).get()
     
     pool.close()
 
