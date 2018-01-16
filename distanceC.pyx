@@ -190,7 +190,7 @@ cpdef distance_multi_GUI(str seq1, str seq2, int label, int max_dist=-1):
         return 0
     sv_seq1 = seq1
     
-    if (len(seq1) > len(seq2)) :
+    if (len(seq1) < len(seq2)) :
         seq1 = reduce(seq1,len(seq2))
     else :
         seq2 = reduce(seq2,len(seq1))
@@ -325,7 +325,7 @@ cpdef reduce(str word, int size) :
             i += 1
             c = word[i] if i != lenght else "z"
         
-    cdef int coef = lenght/size
+    cdef float coef = float(lenght)/float(size)
     for c in L :
         if c[0] != "#" :
             ret += c[0]*round(c[1]/coef)
